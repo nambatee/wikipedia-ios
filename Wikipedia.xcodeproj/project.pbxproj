@@ -1981,7 +1981,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "scripts/make-css-assets.bash";
+			shellScript = "#scripts/make-css-assets.bash";
 		};
 		04272E7619404CDF00CC682F /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1994,7 +1994,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "scripts/run-grunt.sh";
+			shellScript = "#scripts/run-grunt.sh";
 		};
 		046F268119C387BD00D7ACB3 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2011,7 +2011,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "scripts/icon-svgs-to-pngs.sh";
+			shellScript = "#scripts/icon-svgs-to-pngs.sh";
 		};
 		048702AE19F75B0800B7D307 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2039,7 +2039,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "scripts/update-storyboard-strings.php";
+			shellScript = "#scripts/update-storyboard-strings.php";
 		};
 		D4C16A631970949A00CD91AD /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2055,7 +2055,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "scripts/update-qqq.php";
+			shellScript = "#scripts/update-qqq.php";
 		};
 /* End PBXShellScriptBuildPhase section */
 
