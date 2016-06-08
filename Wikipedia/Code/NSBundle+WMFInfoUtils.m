@@ -46,10 +46,6 @@
 
 #pragma mark - Config
 
-- (NSString*)wmf_hockeyappIdentifier {
-    return [self objectForInfoDictionaryKey:@"WMFHockeyAppIdentifier"];
-}
-
 - (NSString*)wmf_piwikURL {
     return [self objectForInfoDictionaryKey:@"WMFPiwikURL"];
 }

@@ -8,4 +8,7 @@
 
     #import "Global.h"
 
+    #define QUOTE2(x) #x
+    #define QUOTE(x) QUOTE2(x)
+
 #endif // end __OBJC__

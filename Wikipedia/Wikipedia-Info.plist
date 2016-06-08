@@ -88,8 +88,6 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>WMFHockeyAppIdentifier</key>
-	<string></string>
 	<key>WMFPiwikAppIdentifier</key>
 	<string></string>
 	<key>WMFPiwikURL</key>

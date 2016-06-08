@@ -6359,6 +6359,7 @@
 					"$(inherited)",
 					"COCOAPODS=1",
 					"PIWIK_ENABLED=1",
+					"WMF_HOCKEYAPP_IDENTIFIER=$(WMF_HOCKEYAPP_IDENTIFIER)",
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				INFOPLIST_FILE = "Wikipedia/Wikipedia-Info.plist";
@@ -6491,6 +6492,7 @@
 					"$(inherited)",
 					"COCOAPODS=1",
 					"PIWIK_ENABLED=1",
+					"WMF_HOCKEYAPP_IDENTIFIER=$(WMF_HOCKEYAPP_IDENTIFIER)",
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				INFOPLIST_FILE = "Wikipedia/Wikipedia-Info.plist";
@@ -6761,6 +6763,7 @@
 					"$(inherited)",
 					"COCOAPODS=1",
 					"PIWIK_ENABLED=1",
+					"WMF_HOCKEYAPP_IDENTIFIER=$(WMF_HOCKEYAPP_IDENTIFIER)",
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				INFOPLIST_FILE = "Wikipedia/Wikipedia-Info.plist";
@@ -6806,6 +6809,7 @@
 					"$(inherited)",
 					"COCOAPODS=1",
 					"PIWIK_ENABLED=1",
+					"WMF_HOCKEYAPP_IDENTIFIER=$(WMF_HOCKEYAPP_IDENTIFIER)",
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				INFOPLIST_FILE = "Wikipedia/Wikipedia-Info.plist";

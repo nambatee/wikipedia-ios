@@ -5,6 +5,7 @@
 #import "WMFCrashAlertView.h"
 #import "DDLog+WMFLogger.h"
 
+static NSString* const WMFHockeyappIdentifier = @QUOTE(WMF_HOCKEYAPP_IDENTIFIER);
 
 // See also:
 // http://support.hockeyapp.net/kb/client-integration-ios-mac-os-x/hockeyapp-for-ios
@@ -32,16 +33,14 @@ static NSString* const kHockeyAppDoNotSendStringsKey                 = @"hockeya
 }
 
 - (void)wmf_setupAndStart {
-    NSString* appID = [[NSBundle mainBundle] wmf_hockeyappIdentifier];
-    DDLogError(@"app ID: %@", appID);
+    DDLogError(@"app ID: %@", WMFHockeyappIdentifier);
 
-    if ([appID length] == 0) {
+    if ([WMFHockeyappIdentifier length] == 0) {
         DDLogError(@"Not setting up hockey becuase no app ID was found");
         return;
     }
 
-
-    [[BITHockeyManager sharedHockeyManager] configureWithIdentifier:appID];
+    [[BITHockeyManager sharedHockeyManager] configureWithIdentifier:WMFHockeyappIdentifier];
 
 #if DEBUG
     [BITHockeyManager sharedHockeyManager].debugLogEnabled = YES;
