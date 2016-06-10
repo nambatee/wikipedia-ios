@@ -26,7 +26,7 @@ function widenAncestors (el) {
 function shouldWidenImage(image) {
     if (
         image.width >= 64 &&
-        image.hasAttribute('srcset') &&
+        image.hasAttribute('data-file-width') &&
         !image.hasAttribute('hasOverflowXContainer') &&
         !utilities.isNestedInTable(image)
         ) {
@@ -53,26 +53,32 @@ function getStretchRatio(image){
     return 1.0;
 }
 
-function useHigherResolutionImageSrcFromSrcsetIfNecessary(image) {
-    if (image.getAttribute('srcset')){
+function useHigherResolutionImageSrcIfNecessary(image) {
+    var src = image.getAttribute('src');
+    if (src){
         var stretchRatio = getStretchRatio(image);
         if (stretchRatio > maxStretchRatioAllowedBeforeRequestingHigherResolution) {
-            var srcsetDict = utilities.getDictionaryFromSrcset(image.getAttribute('srcset'));
-            /*
-            Grab the highest res url from srcset - avoids the complexity of parsing urls
-            to retrieve variants - which can get tricky - canonicals have different paths 
-            than size variants
-            */
-            var largestSrcsetDictKey = Object.keys(srcsetDict).reduce(function(a, b) {
-              return a > b ? a : b;
-            });
-
-            image.src = srcsetDict[largestSrcsetDictKey];
-
-            if(enableDebugBorders){
-                image.style.borderWidth = '10px';
-            }
-        }
+			var pathComponents = src.split("/");
+			var filename = pathComponents[pathComponents.length - 1];
+			var sizeRegex = /^[0-9]+(?=px-)/;
+			var sizeMatches = filename.match(sizeRegex);
+			if (sizeMatches.length > 0) {
+				var size = parseInt(sizeMatches[0]);
+				var originalSize = parseInt(image.getAttribute('data-file-width'));
+				var newSize = size*stretchRatio*window.devicePixelRatio;
+				var newSrc = pathComponents.slice(0,-1).join('/');
+				if (newSize < originalSize) {
+					var newFilename = filename.replace(sizeRegex, newSize.toString());
+					newSrc = newSrc + '/' + newFilename;
+				} else {
+					newSrc = newSrc.replace('/thumb/', '/');
+				}
+				image.src = newSrc;
+	            if(enableDebugBorders){
+	                image.style.borderWidth = '10px';
+	            }
+			}
+        } 
     }
 }
 
@@ -86,7 +92,7 @@ function widenImage(image) {
         image.style.borderColor = '#f00';
     }
 
-    useHigherResolutionImageSrcFromSrcsetIfNecessary(image);
+    useHigherResolutionImageSrcIfNecessary(image);
 }
 
 function maybeWidenImage() {
