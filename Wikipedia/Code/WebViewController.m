@@ -634,9 +634,9 @@ NSString* const WMFCCBySALicenseURL =
             if (!self) {
                 return;
             }
-
-            NSNumber* imageWidth = payload[@"width"];
-            NSNumber* imageHeight = payload[@"height"];
+            
+            NSNumber* imageWidth = payload[@"data-file-width"] ? : payload[@"width"];
+            NSNumber* imageHeight = payload[@"data-file-height"] ? : payload[@"height"];
             CGSize imageSize = CGSizeMake(imageWidth.floatValue, imageHeight.floatValue);
             if (![MWKImage isSizeLargeEnoughForGalleryInclusion:imageSize]) {
                 return;

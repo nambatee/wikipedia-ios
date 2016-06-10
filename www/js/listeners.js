@@ -100,7 +100,9 @@ function maybeSendMessageForTarget(event, hrefTarget){
          bridge.sendMessage('imageClicked', {
                             'url': url,
                             'width': (event.target.naturalWidth / window.devicePixelRatio),
-                            'height': (event.target.naturalHeight / window.devicePixelRatio)
+                            'height': (event.target.naturalHeight / window.devicePixelRatio),
+			 				'data-file-width': event.target.getAttribute('data-file-width'),
+			 				'data-file-height': event.target.getAttribute('data-file-height')
                             });
     } else if (href) {
         bridge.sendMessage( 'linkClicked', { 'href': href });
