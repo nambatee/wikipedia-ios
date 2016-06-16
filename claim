@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+require 'net/http'
+require 'json'
+
+task_id = ARGV[0]
+api_token = ENV['PHABRICATOR_API_TOKEN']
+puts api_token
+uri = URI('https://phabricator.wikimedia.org/api/maniphest.info')
+res = Net::HTTP.post_form(uri, 'api.token' => api_token, 'task_id' => task_id)
+
+puts JSON.parse(res.body) if res.is_a?(Net::HTTPSuccess)
