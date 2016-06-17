@@ -28,19 +28,23 @@ public class WMFLegacyImageDataMigration : NSObject {
     /// Data store which provides articles and saves the entries after processing.
     let legacyDataStore: MWKDataStore
 
-    /// Background task manager which invokes the receiver's methods to migrate image data in the background.
-    private lazy var backgroundTaskManager: WMFBackgroundTaskManager<MWKSavedPageEntry> = {
-        WMFBackgroundTaskManager(
-        next: { [weak self] in
-            return self?.unmigratedEntry()
-        },
-        processor: { [weak self] entry in
-            return self?.migrateEntry(entry) ?? Promise<Void>(error: LegacyImageDataMigrationError.Deinit)
-        },
-        finalize: { [weak self] in
-            return self?.save() ?? Promise()
-        })
-    }()
+//    /// Background task manager which invokes the receiver's methods to migrate image data in the background.
+//    private lazy var backgroundTaskManager: WMFBackgroundTaskManager<MWKSavedPageEntry> = {
+//        
+//        let next =  { [weak self] () -> MWKSavedPageEntry? in
+//            return self?.unmigratedEntry()
+//        }
+//        
+//        let processor =  { [weak self] (entry: MWKSavedPageEntry, failure: (ErrorType) -> Void, completion: () -> Void) in
+//            self?.migrateEntry(entry, completion: completion)
+//        }
+//        
+//        let finalize = { [weak self] (failure: (ErrorType) -> Void, completion: () -> Void) in
+//            
+//        }
+//        
+//        WMFBackgroundTaskManager(next: next, processor: processor, finalize: finalize)
+//    }()
 
     /// Initialize a new migrator.
     public required init(imageController: WMFImageController = WMFImageController.sharedInstance(),
@@ -50,12 +54,9 @@ public class WMFLegacyImageDataMigration : NSObject {
         super.init()
     }
 
-    public func setupAndStart() -> Promise<Void> {
-        return self.backgroundTaskManager.start()
-    }
-
-    public func setupAndStart() -> AnyPromise {
-        return AnyPromise(bound: setupAndStart())
+    public func setupAndStart(failure: (ErrorType) -> Void, completion: () -> Void) {
+        completion()
+        //self.backgroundTaskManager.start(failure, completion: completion)
     }
 
     /// MARK: - Testable Methods
@@ -81,39 +82,46 @@ public class WMFLegacyImageDataMigration : NSObject {
     }
 
     /// Migrate all images in `entry` into `imageController`, then mark it as migrated.
-    func migrateEntry(entry: MWKSavedPageEntry) -> Promise<Void> {
+    func migrateEntry(entry: MWKSavedPageEntry, completion: () -> Void){
         DDLogDebug("Migrating entry \(entry)")
-        return migrateAllImagesInArticleWithTitle(entry.title)
-        .then() { [weak self] in
+        migrateAllImagesInArticleWithTitle(entry.title) { [weak self] in
             self?.markEntryAsMigrated(entry)
+            completion()
         }
     }
 
     /// Move an article's images into `imageController`, ignoring any errors.
-    func migrateAllImagesInArticleWithTitle(title: MWKTitle) -> Promise<Void> {
+    func migrateAllImagesInArticleWithTitle(title: MWKTitle, completion: () -> Void) {
+        let group = dispatch_group_create()
+        let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)
+        
         if let images = legacyDataStore.existingArticleWithTitle(title)?.allImageURLs() {
-            if images.count > 0 {
-                return images.reduce(Promise()) { (chain, url) -> Promise<Void> in
-                    return chain.then(on: dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) { [weak self] in
-                        guard let `self` = self else {
-                            return Promise(error: LegacyImageDataMigrationError.Deinit)
-                        }
-                        let filepath = self.legacyDataStore.pathForImageData(url.absoluteString, title: title)
-                        let promise = self.imageController.importImage(fromFile: filepath, withURL: url)
-                        return promise.recover() { (error: ErrorType) -> Promise<Void> in
-                            #if DEBUG
-                            // only return errors in debug, silently fail in production
-                            if (error as NSError).code != NSFileNoSuchFileError {
-                                return Promise(error: error)
-                            }
-                            #endif
-                            return Promise()
-                        }
+            for url in images {
+                dispatch_group_enter(group)
+                dispatch_async(queue) { [weak self] in
+                    guard let `self` = self else {
+                        DDLogDebug("deinit error")
+                        dispatch_group_leave(group)
+                        return
                     }
-                }.asVoid()
+                    let filepath = self.legacyDataStore.pathForImageData(url.absoluteString, title: title)
+                    let failure = { (error: ErrorType) in
+                        DDLogDebug("image migration error: \(error)")
+                        dispatch_group_leave(group)
+                    }
+                    
+                    let completion = { () in
+                        dispatch_group_leave(group)
+                    }
+                    self.imageController.importImage(fromFile: filepath, withURL: url, failure: failure,completion: completion)
+                }
             }
         }
-        return Promise()
+        
+        dispatch_async(queue) {
+            dispatch_group_wait(group, DISPATCH_TIME_FOREVER)
+            completion()
+        }
     }
 
     /// Mark the given entry as having its image data migrated.

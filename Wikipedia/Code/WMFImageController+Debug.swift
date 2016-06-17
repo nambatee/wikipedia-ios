@@ -33,7 +33,7 @@ internal extension WMFImageController {
             download.image.wmf_fillCurrentContext()
             // tint
             CGContextSetFillColorWithColor(UIGraphicsGetCurrentContext(),
-                                           ImageOrigin(rawValue: download.origin)!.debugColor.CGColor)
+                                           download.origin.debugColor.CGColor)
             UIRectFillUsingBlendMode(download.image.wmf_frame, CGBlendMode.Overlay)
         }
         return transformedDownload
