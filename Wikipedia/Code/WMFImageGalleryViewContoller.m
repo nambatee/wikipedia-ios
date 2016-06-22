@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage*)placeholderImage {
     NSURL* url = [self thumbnailImageURL];
     if (url) {
-        UIImage* image = [(WMFURLCache*)[NSURLCache sharedURLCache] cachedImageForURL:url];
+        UIImage* image = [[WMFImageController sharedInstance] cachedImageInMemoryWithURL:url];
         if (!image) {
             image = [[WMFImageController sharedInstance] syncCachedImageWithURL:url];
         }
@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage*)image {
     NSURL* url = [self imageURL];
     if (url) {
-        UIImage* image = [(WMFURLCache*)[NSURLCache sharedURLCache] cachedImageForURL:url];
+        UIImage* image = [[WMFImageController sharedInstance] cachedImageInMemoryWithURL:url];
         if (!image) {
             image = [[WMFImageController sharedInstance] syncCachedImageWithURL:url];
         }
@@ -372,11 +372,14 @@ NS_ASSUME_NONNULL_BEGIN
                                 : MWLocalizedString(@"image-gallery-unknown-owner", nil);
 
     [caption setLicense:imageInfo.license owner:ownerOrFallback];
-
+    
+    @weakify(self)
     caption.ownerTapCallback = ^{
+        @strongify(self)
         [self wmf_openExternalUrl:imageInfo.license.URL];
     };
     caption.infoTapCallback = ^{
+        @strongify(self)
         [self wmf_openExternalUrl:imageInfo.filePageURL];
     };
 
@@ -490,7 +493,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)fetchImageForPhoto:(WMFArticlePhoto*)galleryImage {
-    if (![galleryImage memoryCachedImage]) {
+    UIImage* memoryCachedImage = [galleryImage memoryCachedImage];
+    if (memoryCachedImage == nil) {
         @weakify(self);
         [[WMFImageController sharedInstance] fetchImageWithURL:[galleryImage imageURL]].then(^(WMFImageDownload* download) {
             @strongify(self);
@@ -499,6 +503,8 @@ NS_ASSUME_NONNULL_BEGIN
         .catch(^(NSError* error) {
             //show error
         });
+    } else {
+        [self updateImageForPhoto:galleryImage];
     }
 }
 
@@ -722,7 +728,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)fetchImageForPhoto:(WMFPOTDPhoto*)galleryImage {
     @weakify(self);
-    if (![galleryImage memoryCachedImage]) {
+    UIImage* memoryCachedImage = [galleryImage memoryCachedImage];
+    if (memoryCachedImage == nil) {
         [[WMFImageController sharedInstance] fetchImageWithURL:[galleryImage bestImageURL]].then(^(WMFImageDownload* download) {
             @strongify(self);
             [self updateImageForPhoto:galleryImage];
@@ -730,6 +737,8 @@ NS_ASSUME_NONNULL_BEGIN
         .catch(^(NSError* error) {
             //show error
         });
+    } else {
+        [self updateImageForPhoto:galleryImage];
     }
 }
 

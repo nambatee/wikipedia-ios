@@ -27,6 +27,7 @@
 #import "WMFGCDHelpers.h"
 
 #import "NSURL+WMFExtras.h"
+#import "NSURL+WMFLinkParsing.h"
 #import "NSString+WMFExtras.h"
 #import "NSString+FormattedAttributedString.h"
 #import "WMFRangeUtils.h"
@@ -40,6 +41,7 @@
 #import "AFHTTPSessionManager+WMFDesktopRetry.h"
 #import "MWNetworkActivityIndicatorManager.h"
 #import "NSDateFormatter+WMFExtensions.h"
+#import "NSFileManager+WMFExtendedFileAttributes.h"
 
 // View Controllers
 #import "WMFArticleViewController_Private.h"

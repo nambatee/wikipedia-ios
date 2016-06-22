@@ -97,6 +97,10 @@
 
     [self updateDynamicIconShortcutItems];
 
+    
+    NSURL *documentsURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    NSLog(@"%@", documentsURL);
+
     return YES;
 }
 

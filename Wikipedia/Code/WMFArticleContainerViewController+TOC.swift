@@ -4,16 +4,20 @@ import Foundation
 extension WMFArticleViewController : WMFTableOfContentsViewControllerDelegate {
 
     public func tableOfContentsControllerWillDisplay(controller: WMFTableOfContentsViewController){
-        if let item: TableOfContentsItem = webViewController.currentVisibleSection() {
-            tableOfContentsViewController!.selectAndScrollToItem(item, animated: false)
-        } else if let footerIndex: WMFArticleFooterViewIndex = WMFArticleFooterViewIndex(rawValue: webViewController.visibleFooterIndex()) {
-            switch footerIndex {
-            case .ReadMore:
-                tableOfContentsViewController!.selectAndScrollToItem(TableOfContentsReadMoreItem(site: self.articleTitle.site), animated: false)
+        webViewController.getCurrentVisibleSectionCompletion({(section: MWKSection?, error: NSError?) -> Void in
+            if let item: TableOfContentsItem = section {
+                self.tableOfContentsViewController!.selectAndScrollToItem(item, animated: false)
+            } else if let footerIndex: WMFArticleFooterViewIndex = WMFArticleFooterViewIndex(rawValue: self.webViewController.visibleFooterIndex()) {
+                switch footerIndex {
+                case .ReadMore:
+                    self.tableOfContentsViewController!.selectAndScrollToItem(TableOfContentsReadMoreItem(site: self.articleTitle.site), animated: false)
+                case .AboutThisArticle:
+                    self.tableOfContentsViewController!.selectAndScrollToItem(TableOfContentsAboutThisArticleItem(site: self.articleTitle.site), animated: false)
+                }
+            } else {
+                assertionFailure("Couldn't find current position of user at current offset!")
             }
-        } else {
-            assertionFailure("Couldn't find current position of user at current offset!")
-        }
+        })
     }
 
     public func tableOfContentsController(controller: WMFTableOfContentsViewController,
@@ -21,7 +25,7 @@ extension WMFArticleViewController : WMFTableOfContentsViewControllerDelegate {
         var dismissVCCompletionHandler: (() -> Void)?
         if let section = item as? MWKSection {
             // HAX: webview has issues scrolling when browser view is out of bounds, disable animation if needed
-            self.webViewController.scrollToSection(section, animated: self.webViewController.isWebContentVisible)
+            self.webViewController.scrollToSection(section, animated: true)
             dismissVCCompletionHandler = {
                 // HAX: This is terrible, but iOS events not under our control would steal our focus if we didn't wait long enough here and due to problems in UIWebView, we cannot work around it either.
                 dispatchOnMainQueueAfterDelayInSeconds(1) {
@@ -84,13 +88,17 @@ extension WMFArticleViewController {
     /**
      Append a read more section to the table of contents.
      */
-    public func appendReadMoreTableOfContentsItemIfNeeded() {
+    public func appendItemsToTableOfContentsIncludingAboutThisArticle(includeAbout: Bool, includeReadMore: Bool) {
         assert(self.tableOfContentsViewController != nil, "Attempting to add read more when toc is nil")
-        guard let tvc = self.tableOfContentsViewController
-              where !tvc.items.contains({ (item: TableOfContentsItem) in item.dynamicType == TableOfContentsReadMoreItem.self })
-              else { return }
+        guard let tvc = self.tableOfContentsViewController else { return; }
+
         if var items = createTableOfContentsSections() {
-            items.append(TableOfContentsReadMoreItem(site: self.articleTitle.site))
+            if (includeAbout) {
+                items.append(TableOfContentsAboutThisArticleItem(site: self.articleTitle.site))
+            }
+            if (includeReadMore) {
+                items.append(TableOfContentsReadMoreItem(site: self.articleTitle.site))
+            }
             tvc.items = items
         }
     }
