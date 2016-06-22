@@ -68,22 +68,12 @@ function maybeSendMessageForTarget(event, hrefTarget){
         window.webkit.messageHandlers.clicks.postMessage({"linkClicked": { 'href': href }});
     } else if (typeof hrefClass === 'string' && hrefClass.indexOf('image') !== -1) {
          var url = event.target.getAttribute('src');
-<<<<<<< HEAD
-         bridge.sendMessage('imageClicked', {
-                            'url': url,
-                            'width': (event.target.naturalWidth / window.devicePixelRatio),
-                            'height': (event.target.naturalHeight / window.devicePixelRatio),
-			 				'data-file-width': event.target.getAttribute('data-file-width'),
-			 				'data-file-height': event.target.getAttribute('data-file-height')
-                            });
-=======
          window.webkit.messageHandlers.clicks.postMessage({"imageClicked": {
                                                           'url': url,
                                                           'width': (event.target.naturalWidth / window.devicePixelRatio),
                                                           'height': (event.target.naturalHeight / window.devicePixelRatio)
                                                           }});
 
->>>>>>> develop
     } else if (href) {
         window.webkit.messageHandlers.clicks.postMessage({"linkClicked": { 'href': href }});
     } else {
