@@ -75,7 +75,7 @@ static CLLocationDistance const WMFMinimumDistanceBeforeUpdatingNearby = 500.0;
                      savedPages:savedPages
                         history:history
                       blackList:blackList
-                locationManager:[WMFLocationManager coarseLocationManager]
+                locationManager:[WMFLocationManager sharedCoarseLocationManager]
                            file:[self defaultSchemaURL]];
 }
 
@@ -98,11 +98,15 @@ static CLLocationDistance const WMFMinimumDistanceBeforeUpdatingNearby = 500.0;
     schema.blackList         = blackList;
     schema.fileURL           = fileURL;
     schema.locationManager   = locationManager;
-    locationManager.delegate = schema;
+    [locationManager addDelegate:schema];
 
     [schema update:YES];
 
     return schema;
+}
+
+- (void)dealloc {
+    [self.locationManager removeDelegate:self];
 }
 
 - (void)setBlackList:(WMFRelatedSectionBlackList*)blackList {
@@ -217,8 +221,7 @@ static CLLocationDistance const WMFMinimumDistanceBeforeUpdatingNearby = 500.0;
 }
 
 - (BOOL)update:(BOOL)force {
-    [self.locationManager restartLocationMonitoring];
-
+    [self.locationManager addDelegate:self];
     if (!FBTweakValue(@"Explore", @"General", @"Always update on launch", NO)
         && !force
         && self.lastUpdatedAt
@@ -635,7 +638,7 @@ static CLLocationDistance const WMFMinimumDistanceBeforeUpdatingNearby = 500.0;
         //We don't want old cached values - fresh data please!
         return;
     }
-    [self.locationManager stopMonitoringLocation];
+    [self.locationManager removeDelegate:self];
     [self insertNearbySectionWithLocationIfNeeded:location];
 }
 
@@ -646,7 +649,7 @@ static CLLocationDistance const WMFMinimumDistanceBeforeUpdatingNearby = 500.0;
 - (void)nearbyController:(WMFLocationManager*)controller didReceiveError:(NSError*)error {
     if ([WMFLocationManager isDeniedOrDisabled]) {
         [self removeNearbySection];
-        [self.locationManager stopMonitoringLocation];
+        [self.locationManager removeDelegate:self];
         return;
     }
 

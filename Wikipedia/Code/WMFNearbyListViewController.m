@@ -14,15 +14,18 @@
 - (instancetype)initWithSearchSite:(MWKSite*)site dataStore:(MWKDataStore*)dataStore {
     self = [super initWithSearchSite:site dataStore:dataStore];
     if (self) {
-        [self.locationManager startMonitoringLocation];
+        [self.locationManager addDelegate:self];
     }
     return self;
 }
 
+- (void)dealloc {
+    [self.locationManager removeDelegate:self];
+}
+
 - (WMFLocationManager*)locationManager {
     if (_locationManager == nil) {
-        _locationManager          = [WMFLocationManager fineLocationManager];
-        _locationManager.delegate = self;
+        _locationManager          = [WMFLocationManager sharedCoarseLocationManager];
     }
     return _locationManager;
 }
@@ -31,7 +34,7 @@
 
 - (void)nearbyController:(WMFLocationManager*)controller didUpdateLocation:(CLLocation*)location {
     self.location = location;
-    [self.locationManager stopMonitoringLocation];
+    [self.locationManager removeDelegate:self];
 }
 
 - (void)nearbyController:(WMFLocationManager*)controller didUpdateHeading:(CLHeading*)heading {
