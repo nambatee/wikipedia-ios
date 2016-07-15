@@ -1178,7 +1178,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - WMFArticleListTableViewControllerDelegate
 
-- (void)listViewController:(WMFArticleListTableViewController*)listController didSelectArticleURL:(NSURL*)url {
+- (void)listViewController:(WMFArticleListViewController*)listController didSelectArticleURL:(NSURL*)url {
     if ([self presentedViewController]) {
         [self dismissViewControllerAnimated:YES completion:NULL];
     }
@@ -1189,12 +1189,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self pushArticleViewControllerWithURL:url contentType:contentType animated:YES];
 }
 
-- (UIViewController*)listViewController:(WMFArticleListTableViewController*)listController viewControllerForPreviewingArticleURL:(NSURL*)url {
+- (UIViewController*)listViewController:(WMFArticleListViewController*)listController viewControllerForPreviewingArticleURL:(NSURL*)url {
     return [[WMFArticleViewController alloc] initWithArticleURL:url
                                                       dataStore:self.dataStore];
 }
 
-- (void)listViewController:(WMFArticleListTableViewController*)listController didCommitToPreviewedViewController:(UIViewController*)viewController {
+- (void)listViewController:(WMFArticleListViewController*)listController didCommitToPreviewedViewController:(UIViewController*)viewController {
     if ([self presentedViewController]) {
         [self dismissViewControllerAnimated:YES completion:NULL];
     }

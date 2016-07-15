@@ -1,6 +1,6 @@
-#import "WMFArticleListTableViewController.h"
+#import "WMFArticleListViewController.h"
 
-@interface WMFDisambiguationPagesViewController : WMFArticleListTableViewController
+@interface WMFDisambiguationPagesViewController : WMFArticleListViewController
 
 @property (nonatomic, strong, readonly) MWKArticle* article;
 

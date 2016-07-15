@@ -31,7 +31,7 @@
 // View Controllers
 #import "WMFExploreViewController.h"
 #import "WMFSearchViewController.h"
-#import "WMFArticleListTableViewController.h"
+#import "WMFArticleListViewController.h"
 #import "WMFWelcomeViewController.h"
 #import "UIViewController+WMFArticlePresentation.h"
 #import "WMFNearbyListViewController.h"
@@ -77,8 +77,8 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
 @property (nonatomic, strong) UITabBarController* rootTabBarController;
 
 @property (nonatomic, strong, readonly) WMFExploreViewController* exploreViewController;
-@property (nonatomic, strong, readonly) WMFArticleListTableViewController* savedArticlesViewController;
-@property (nonatomic, strong, readonly) WMFArticleListTableViewController* recentArticlesViewController;
+@property (nonatomic, strong, readonly) WMFArticleListViewController* savedArticlesViewController;
+@property (nonatomic, strong, readonly) WMFArticleListViewController* recentArticlesViewController;
 
 @property (nonatomic, strong) SavedArticlesFetcher* savedArticlesFetcher;
 @property (nonatomic, strong) WMFRandomArticleFetcher* randomFetcher;
@@ -150,7 +150,7 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
     [self.exploreViewController setDataStore:[self dataStore]];
 }
 
-- (void)configureArticleListController:(WMFArticleListTableViewController*)controller {
+- (void)configureArticleListController:(WMFArticleListViewController*)controller {
     controller.dataStore = self.session.dataStore;
 }
 
@@ -496,12 +496,12 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
     return (WMFExploreViewController*)[self rootViewControllerForTab:WMFAppTabTypeExplore];
 }
 
-- (WMFArticleListTableViewController*)savedArticlesViewController {
-    return (WMFArticleListTableViewController*)[self rootViewControllerForTab:WMFAppTabTypeSaved];
+- (WMFArticleListViewController*)savedArticlesViewController {
+    return (WMFArticleListViewController*)[self rootViewControllerForTab:WMFAppTabTypeSaved];
 }
 
-- (WMFArticleListTableViewController*)recentArticlesViewController {
-    return (WMFArticleListTableViewController*)[self rootViewControllerForTab:WMFAppTabTypeRecent];
+- (WMFArticleListViewController*)recentArticlesViewController {
+    return (WMFArticleListViewController*)[self rootViewControllerForTab:WMFAppTabTypeRecent];
 }
 
 #pragma mark - UIViewController

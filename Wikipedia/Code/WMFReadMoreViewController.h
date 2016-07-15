@@ -1,7 +1,7 @@
 
-#import "WMFSelfSizingArticleListTableViewController.h"
+#import "WMFArticleListViewController.h"
 
-@interface WMFReadMoreViewController : WMFSelfSizingArticleListTableViewController
+@interface WMFReadMoreViewController : WMFArticleListViewController
 
 @property (nonatomic, strong, readonly) NSURL* articleURL;
 

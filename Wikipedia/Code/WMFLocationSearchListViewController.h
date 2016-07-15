@@ -1,10 +1,10 @@
 
-#import "WMFArticleListTableViewController.h"
+#import "WMFArticleListViewController.h"
 #import "WMFNearbyTitleListDataSource.h"
 @import CoreLocation;
 
 
-@interface WMFLocationSearchListViewController : WMFArticleListTableViewController
+@interface WMFLocationSearchListViewController : WMFArticleListViewController
 
 @property (nonatomic, strong, readonly) NSURL* searchDomainURL;
 @property (nonatomic, strong) CLLocation* location;

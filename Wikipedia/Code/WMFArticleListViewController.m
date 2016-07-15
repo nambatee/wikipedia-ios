@@ -1,10 +1,10 @@
 
-#import "WMFArticleListTableViewController.h"
+#import "WMFArticleListViewController.h"
 
 #import "MWKDataStore.h"
 #import "MWKArticle.h"
 
-#import <SSDataSources/SSDataSources.h>
+#import "WMFDataSource.h"
 
 #import "UIView+WMFDefaultNib.h"
 #import "UIViewController+WMFHideKeyboard.h"
@@ -24,59 +24,33 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WMFArticleListTableViewController ()<UIViewControllerPreviewingDelegate>
+@interface WMFArticleListViewController ()<UIViewControllerPreviewingDelegate>
 
 @property (nonatomic, weak) id<UIViewControllerPreviewing> previewingContext;
+@property (nonatomic, readonly) WMFDataSource<WMFTitleListDataSource>* titleListDataSource;
 
 @end
 
-@implementation WMFArticleListTableViewController
+@implementation WMFArticleListViewController
 
 #pragma mark - Tear Down
 
 - (void)dealloc {
     [self unobserveArticleUpdates];
-    // NOTE(bgerstle): must check if dataSource was set to prevent creation of KVOControllerNonRetaining during dealloc
-    // happens during tests, creating KVOControllerNonRetaining during dealloc attempts to create weak ref, causing crash
-    if (self.dataSource) {
-        [self.KVOControllerNonRetaining unobserve:self.dataSource keyPath:WMF_SAFE_KEYPATH(self.dataSource, urls)];
-    }
 }
 
-#pragma mark - Accessors
+#pragma mark - Title List Data Source
 
-- (void)setDataSource:(SSBaseDataSource<WMFTitleListDataSource>* __nullable)dataSource {
-    if (_dataSource == dataSource) {
-        return;
-    }
+- (WMFDataSource<WMFTitleListDataSource>*)titleListDataSource {
+    return (WMFDataSource<WMFTitleListDataSource>*)self.dataSource;
+}
 
-    _dataSource.tableView     = nil;
-    self.tableView.dataSource = nil;
+#pragma mark - WMFDataSourceObserver
 
-    [self.KVOControllerNonRetaining unobserve:self.dataSource keyPath:WMF_SAFE_KEYPATH(self.dataSource, urls)];
-
-    _dataSource = dataSource;
-
-    //HACK: Need to check the window to see if we are on screen. http://stackoverflow.com/a/2777460/48311
-    //isViewLoaded is not enough.
-    if ([self isViewLoaded] && self.view.window) {
-        if (_dataSource) {
-            _dataSource.tableView = self.tableView;
-        }
-        [self.tableView wmf_scrollToTop:NO];
-        [self.tableView reloadData];
-    }
-
-    [self updateDeleteButton];
-    [self.KVOControllerNonRetaining observe:self.dataSource
-                                    keyPath:WMF_SAFE_KEYPATH(self.dataSource, urls)
-                                    options:NSKeyValueObservingOptionInitial
-                                      block:^(WMFArticleListTableViewController* observer,
-                                              SSBaseDataSource < WMFTitleListDataSource > * object,
-                                              NSDictionary* change) {
-        [observer updateDeleteButtonEnabledState];
-        [observer updateEmptyState];
-    }];
+- (void)dataSourceDidChangeContent:(WMFDataSource*)dataSource {
+    [super dataSourceDidChangeContent:dataSource];
+    [self updateDeleteButtonEnabledState];
+    [self updateEmptyState];
 }
 
 - (NSString*)debugDescription {
@@ -92,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
             @strongify(self);
             UIActionSheet* sheet = [UIActionSheet bk_actionSheetWithTitle:[self deleteAllConfirmationText]];
             [sheet bk_setDestructiveButtonWithTitle:[self deleteText] handler:^{
-                [self.dataSource deleteAll];
+                [self.titleListDataSource deleteAll];
                 [self.tableView reloadData];
             }];
             [sheet bk_setCancelButtonWithTitle:[self deleteCancelText] handler:NULL];
@@ -104,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)updateDeleteButtonEnabledState {
-    if ([self.dataSource titleCount] > 0) {
+    if ([self.dataSource numberOfItems] > 0) {
         self.navigationItem.leftBarButtonItem.enabled = YES;
     } else {
         self.navigationItem.leftBarButtonItem.enabled = NO;
@@ -118,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if ([self.dataSource titleCount] > 0) {
+    if ([self.dataSource numberOfItems] > 0) {
         [self wmf_hideEmptyView];
     } else {
         [self wmf_showEmptyViewOfType:[self emptyViewType]];
@@ -144,11 +118,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)refreshAnyVisibleCellsWhichAreShowingArticleURL:(NSURL*)url {
     NSArray* indexPathsToRefresh = [[self.tableView indexPathsForVisibleRows] bk_select:^BOOL (NSIndexPath* indexPath) {
-        NSURL* otherURL = [self.dataSource urlForIndexPath:indexPath];
+        NSURL* otherURL = [self.titleListDataSource urlForIndexPath:indexPath];
         return [url isEqual:otherURL];
     }];
 
-    [self.dataSource reloadCellsAtIndexPaths:indexPathsToRefresh];
+    [self reloadCellsAtIndexPaths:indexPathsToRefresh];
 }
 
 #pragma mark - Previewing
@@ -184,16 +158,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.navigationItem.rightBarButtonItem = [self wmf_searchBarButtonItem];
 
-    self.tableView.backgroundColor    = [UIColor wmf_articleListBackgroundColor];
-    self.tableView.separatorColor     = [UIColor wmf_lightGrayColor];
-    self.tableView.estimatedRowHeight = 64.0;
-    self.tableView.rowHeight          = UITableViewAutomaticDimension;
-
-    //HACK: this is the only way to force the table view to hide separators when the table view is empty.
-    //See: http://stackoverflow.com/a/5377805/48311
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-
-    _dataSource.tableView = self.tableView;
+#warning move
+//    self.tableView.backgroundColor    = [UIColor wmf_articleListBackgroundColor];
+//    self.tableView.separatorColor     = [UIColor wmf_lightGrayColor];
+//    self.tableView.estimatedRowHeight = 64.0;
+//    self.tableView.rowHeight          = UITableViewAutomaticDimension;
+//
+//    //HACK: this is the only way to force the table view to hide separators when the table view is empty.
+//    //See: http://stackoverflow.com/a/5377805/48311
+//    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+//
+//    _dataSource.tableView = self.tableView;
 
     [self observeArticleUpdates];
 }
@@ -201,7 +176,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     NSParameterAssert(self.dataStore);
-    self.dataSource.tableView = self.tableView;
     [self updateDeleteButtonEnabledState];
     [self updateEmptyState];
     [self registerForPreviewingIfAvailable];
@@ -223,7 +197,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - UITableViewDelegate
 
 - (UITableViewCellEditingStyle)tableView:(UITableView*)tableView editingStyleForRowAtIndexPath:(NSIndexPath*)indexPath {
-    if ([self.dataSource canDeleteItemAtIndexpath:indexPath]) {
+    if ([self.titleListDataSource canDeleteItemAtIndexpath:indexPath]) {
         return UITableViewCellEditingStyleDelete;
     } else {
         return UITableViewCellEditingStyleNone;
@@ -234,7 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[PiwikTracker wmf_configuredInstance] wmf_logActionTapThroughInContext:self contentType:nil];
     [self wmf_hideKeyboard];
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-    NSURL* url = [self.dataSource urlForIndexPath:indexPath];
+    NSURL* url = [self.titleListDataSource urlForIndexPath:indexPath];
     if (self.delegate) {
         [self.delegate listViewController:self didSelectArticleURL:url];
         return;
@@ -253,7 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     previewingContext.sourceRect = [self.tableView cellForRowAtIndexPath:previewIndexPath].frame;
 
-    NSURL* url                                       = [self.dataSource urlForIndexPath:previewIndexPath];
+    NSURL* url                                       = [self.titleListDataSource urlForIndexPath:previewIndexPath];
     id<WMFAnalyticsContentTypeProviding> contentType = nil;
     if ([self conformsToProtocol:@protocol(WMFAnalyticsContentTypeProviding)]) {
         contentType = (id<WMFAnalyticsContentTypeProviding>)self;

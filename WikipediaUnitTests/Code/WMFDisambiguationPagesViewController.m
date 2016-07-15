@@ -15,16 +15,14 @@
 @implementation WMFDisambiguationPagesViewController
 
 - (instancetype)initWithArticle:(MWKArticle*)article dataStore:(MWKDataStore*)dataStore {
-    self = [super init];
+    WMFArticlePreviewDataSource *articlePreviewDataSource = [[WMFArticlePreviewDataSource alloc] initWithArticleURLs:self.article.disambiguationURLs
+                                                   domainURL:self.article.url
+                                                   dataStore:dataStore
+                                                     fetcher:[[WMFArticlePreviewFetcher alloc] init]];
+    self = [super initWithDataSource:articlePreviewDataSource];
     if (self) {
         self.article    = article;
         self.dataStore  = dataStore;
-        self.dataSource =
-            [[WMFArticlePreviewDataSource alloc] initWithArticleURLs:self.article.disambiguationURLs
-                                                           domainURL:self.article.url
-                                                      dataStore:dataStore
-                                                        fetcher:[[WMFArticlePreviewFetcher alloc] init]];
-        self.dataSource.tableView = self.tableView;
     }
     return self;
 }

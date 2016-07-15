@@ -1,10 +1,10 @@
 
-#import "WMFArticleListTableViewController.h"
+#import "WMFArticleListViewController.h"
 #import "WMFRelatedTitleListDataSource.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WMFRelatedTitleViewController : WMFArticleListTableViewController
+@interface WMFRelatedTitleViewController : WMFArticleListViewController
 
 @property (nonatomic, strong) WMFRelatedTitleListDataSource* dataSource;
 

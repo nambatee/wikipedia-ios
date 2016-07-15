@@ -7,6 +7,7 @@
 
 @interface WMFMostReadListDataSource ()
 
+@property (nonatomic, copy) NSArray *allItems;
 @property (nonatomic, strong) NSURL* siteURL;
 @property (nonatomic, strong, readwrite) NSArray<NSURL*>* urls;
 
@@ -15,36 +16,12 @@
 @implementation WMFMostReadListDataSource
 
 - (instancetype)initWithPreviews:(NSArray<MWKSearchResult*>*)previews fromSiteURL:(NSURL*)siteURL {
-    self = [super initWithItems:previews];
+    self = [super init];
     if (self) {
+        self.allItems = previews;
         self.siteURL = siteURL;
-
-        self.cellClass = [WMFArticleListTableViewCell class];
-
-        @weakify(self);
-        self.cellConfigureBlock = ^(WMFArticleListTableViewCell* cell,
-                                    MWKSearchResult* preview,
-                                    UITableView* tableView,
-                                    NSIndexPath* indexPath) {
-            @strongify(self);
-            NSURL* articleURL = [self urlForIndexPath:indexPath];
-            NSParameterAssert([articleURL.wmf_domainURL isEqual:self.siteURL]);
-
-            cell.titleText       = articleURL.wmf_title;
-            cell.descriptionText = preview.wikidataDescription;
-            [cell setImageURL:preview.thumbnailURL];
-
-            [cell wmf_layoutIfNeededIfOperatingSystemVersionLessThan9_0_0];
-        };
     }
     return self;
-}
-
-- (void)setTableView:(UITableView*)tableView {
-    [tableView registerNib:[WMFArticleListTableViewCell wmf_classNib]
-     forCellReuseIdentifier:[WMFArticleListTableViewCell identifier]];
-    tableView.estimatedRowHeight = [WMFArticleListTableViewCell estimatedRowHeight];
-    [super setTableView:tableView];
 }
 
 #pragma mark - Utils

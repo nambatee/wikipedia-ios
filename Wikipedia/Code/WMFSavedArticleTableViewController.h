@@ -1,6 +1,6 @@
 
-#import "WMFArticleListTableViewController.h"
+#import "WMFArticleListViewController.h"
 
-@interface WMFSavedArticleTableViewController : WMFArticleListTableViewController<WMFAnalyticsViewNameProviding>
+@interface WMFSavedArticleTableViewController : WMFArticleListViewController<WMFAnalyticsViewNameProviding>
 
 @end

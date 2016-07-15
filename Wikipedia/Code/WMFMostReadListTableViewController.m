@@ -1,14 +1,7 @@
-//
-//  WMFMostReadListTableViewController.m
-//  Wikipedia
-//
-//  Created by Brian Gerstle on 2/16/16.
-//  Copyright © 2016 Wikimedia Foundation. All rights reserved.
-//
-
 #import "WMFMostReadListTableViewController.h"
 #import "WMFMostReadListDataSource.h"
 #import "NSDateFormatter+WMFExtensions.h"
+#import "WMFArticleListTableViewCell.h"
 
 @implementation WMFMostReadListTableViewController
 
@@ -16,9 +9,9 @@
                      fromSiteURL:(NSURL*)siteURL
                          forDate:date
                        dataStore:(MWKDataStore*)dataStore {
-    self = [super init];
+    
+    self = [super initWithDataSource:[[WMFMostReadListDataSource alloc] initWithPreviews:previews fromSiteURL:siteURL]];
     if (self) {
-        self.dataSource = [[WMFMostReadListDataSource alloc] initWithPreviews:previews fromSiteURL:siteURL];
         self.dataStore  = dataStore;
         self.title      = [self titleForDate:date];
     }
@@ -35,7 +28,24 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.dataSource.tableView = self.tableView;
+    
+#warning update
+//    @strongify(self);
+//    NSURL* articleURL = [self urlForIndexPath:indexPath];
+//    NSParameterAssert([articleURL.wmf_domainURL isEqual:self.siteURL]);
+//    
+//    cell.titleText       = articleURL.wmf_title;
+//    cell.descriptionText = preview.wikidataDescription;
+//    [cell setImageURL:preview.thumbnailURL];
+//    
+//    [cell wmf_layoutIfNeededIfOperatingSystemVersionLessThan9_0_0];
+//
+//    [self.tableView registerClass:[WMFArticleListTableViewCell class] forCellReuseIdentifier:@"WMFArticleListTableViewCell"]];
+//    
+//    [self.tableView registerNib:[WMFArticleListTableViewCell wmf_classNib]
+//    forCellReuseIdentifier:[WMFArticleListTableViewCell identifier]];
+//    self.tableView.estimatedRowHeight = [WMFArticleListTableViewCell estimatedRowHeight];
+    
 }
 
 #pragma mark - WMFArticleListTableViewController

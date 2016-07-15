@@ -1,5 +1,5 @@
 #import <UIKit/UIKit.h>
-#import "WMFArticleListTableViewController.h"
+#import "WMFArticleListViewController.h"
 @class MWKDataStore;
 
 NS_ASSUME_NONNULL_BEGIN

@@ -48,32 +48,33 @@ NS_ASSUME_NONNULL_BEGIN
     NSParameterAssert(fetcher);
     NSParameterAssert(dataStore);
     NSParameterAssert(domainURL);
-    self = [super initWithItems:nil];
+    self = [super init];
     if (self) {
         self.dataStore           = dataStore;
         self.urls                = articleURLs;
         self.domainURL           = domainURL;
         self.titlesSearchFetcher = fetcher;
 
-        self.cellClass = [WMFArticlePreviewTableViewCell class];
-
-        @weakify(self);
-        self.cellConfigureBlock = ^(WMFArticlePreviewTableViewCell* cell,
-                                    MWKSearchResult* searchResult,
-                                    UITableView* tableView,
-                                    NSIndexPath* indexPath) {
-            @strongify(self);
-            NSURL* URL = [self urlForIndexPath:indexPath];
-            NSParameterAssert([URL.wmf_domain isEqual:domainURL.wmf_domain]);
-            cell.titleText       = URL.wmf_title;
-            cell.descriptionText = searchResult.wikidataDescription;
-            cell.snippetText     = searchResult.extract;
-            [cell setImageURL:searchResult.thumbnailURL];
-
-            [cell setSaveableURL:URL savedPageList:self.savedPageList];
-
-            [cell wmf_layoutIfNeededIfOperatingSystemVersionLessThan9_0_0];
-        };
+#warning move
+//        self.cellClass = [WMFArticlePreviewTableViewCell class];
+//
+//        @weakify(self);
+//        self.cellConfigureBlock = ^(WMFArticlePreviewTableViewCell* cell,
+//                                    MWKSearchResult* searchResult,
+//                                    UITableView* tableView,
+//                                    NSIndexPath* indexPath) {
+//            @strongify(self);
+//            NSURL* URL = [self urlForIndexPath:indexPath];
+//            NSParameterAssert([URL.wmf_domain isEqual:domainURL.wmf_domain]);
+//            cell.titleText       = URL.wmf_title;
+//            cell.descriptionText = searchResult.wikidataDescription;
+//            cell.snippetText     = searchResult.extract;
+//            [cell setImageURL:searchResult.thumbnailURL];
+//
+//            [cell setSaveableURL:URL savedPageList:self.savedPageList];
+//
+//            [cell wmf_layoutIfNeededIfOperatingSystemVersionLessThan9_0_0];
+//        };
     }
     return self;
 }
@@ -82,10 +83,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self.dataStore.userDataStore.savedPageList;
 }
 
-- (void)setTableView:(nullable UITableView*)tableView {
-    [super setTableView:tableView];
-    [self.tableView registerNib:[WMFArticlePreviewTableViewCell wmf_classNib] forCellReuseIdentifier:[WMFArticlePreviewTableViewCell identifier]];
-}
+#warning move
+//- (void)setTableView:(nullable UITableView*)tableView {
+//    [super setTableView:tableView];
+//    [self.tableView registerNib:[WMFArticlePreviewTableViewCell wmf_classNib] forCellReuseIdentifier:[WMFArticlePreviewTableViewCell identifier]];
+//}
 
 #pragma mark - Fetching
 
@@ -98,15 +100,22 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
         self.previewResults = searchResults;
-        [self updateItems:searchResults];
+        [self didChangeContent];
     });
+}
+
+#pragma mark - WMFDataSource
+
+- (nullable id)itemAtIndexPath:(NSIndexPath *)indexPath {
+    MWKSearchResult* result = self.previewResults[indexPath.row];
+    return result;
 }
 
 #pragma mark - WMFArticleListDataSource
 
 - (MWKSearchResult*)searchResultForIndexPath:(NSIndexPath*)indexPath {
-    MWKSearchResult* result = self.previewResults[indexPath.row];
-    return result;
+   
+    return (MWKSearchResult *)[self itemAtIndexPath:indexPath];;
 }
 
 - (NSURL*)urlForIndexPath:(NSIndexPath*)indexPath {

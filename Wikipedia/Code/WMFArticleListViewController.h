@@ -2,26 +2,26 @@
 #import <UIKit/UIKit.h>
 #import "WMFTitleListDataSource.h"
 #import "WMFAnalyticsLogging.h"
+#import "WMFDataSourceViewController.h"
 
-@class SSBaseDataSource, MWKDataStore, WMFArticleListTableViewController;
+@class WMFDataSource, MWKDataStore, WMFArticleListViewController;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol WMFArticleListTableViewControllerDelegate <NSObject>
 
-- (void)listViewController:(WMFArticleListTableViewController*)listController didSelectArticleURL:(NSURL*)url;
+- (void)listViewController:(WMFArticleListViewController*)listController didSelectArticleURL:(NSURL*)url;
 
-- (UIViewController*)listViewController:(WMFArticleListTableViewController*)listController viewControllerForPreviewingArticleURL:(NSURL*)url;
+- (UIViewController*)listViewController:(WMFArticleListViewController*)listController viewControllerForPreviewingArticleURL:(NSURL*)url;
 
-- (void)listViewController:(WMFArticleListTableViewController*)listController didCommitToPreviewedViewController:(UIViewController*)viewController;
+- (void)listViewController:(WMFArticleListViewController*)listController didCommitToPreviewedViewController:(UIViewController*)viewController;
 
 @end
 
 
-@interface WMFArticleListTableViewController : UITableViewController<WMFAnalyticsContextProviding>
+@interface WMFArticleListViewController : WMFDataSourceViewController<WMFAnalyticsContextProviding>
 
 @property (nonatomic, strong) MWKDataStore* dataStore;
-@property (nonatomic, strong, nullable) SSBaseDataSource<WMFTitleListDataSource>* dataSource;
 
 /**
  *  Optional delegate which will is informed of selection.
@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-@interface WMFArticleListTableViewController (WMFSubclasses)
+@interface WMFArticleListViewController (WMFSubclasses)
 
 - (NSString*)analyticsContext;
 

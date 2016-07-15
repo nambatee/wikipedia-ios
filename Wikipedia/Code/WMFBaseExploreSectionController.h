@@ -3,7 +3,7 @@
 #import "WMFExploreSectionController.h"
 #import "WMFAnalyticsLogging.h"
 
-@class WMFEmptySectionTableViewCell, MWKDataStore, MWKSavedPageList, MWKHistoryList;
+@class WMFEmptySectionTableViewCell, MWKDataStore, MWKSavedPageList, MWKHistoryList, WMFCell;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UINib*)cellNib;
 
-- (void)configureCell:(UITableViewCell*)cell withItem:(id)item atIndexPath:(NSIndexPath*)indexPath;
+- (void)configureCell:(WMFCell*)cell withItem:(id)item atIndexPath:(NSIndexPath*)indexPath;
 
 @end
 

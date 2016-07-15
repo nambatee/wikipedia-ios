@@ -1,10 +1,9 @@
-
-#import <SSDataSources/SSDataSources.h>
 #import "WMFTitleListDataSource.h"
+#import "WMFDataSource.h"
 
 @class MWKSearchResult;
 
-@interface WMFMostReadListDataSource : SSArrayDataSource
+@interface WMFMostReadListDataSource : WMFDataSource
     <WMFTitleListDataSource>
 
 - (instancetype)initWithItems:(NSArray*)items NS_UNAVAILABLE;

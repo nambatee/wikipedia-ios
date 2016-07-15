@@ -2,6 +2,7 @@
 #import <Foundation/Foundation.h>
 #import "MWKHistoryEntry.h"
 #import "WMFAnalyticsLogging.h"
+#import "WMFCell.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -83,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @param tableView The tableView
  */
-- (void)registerCellsInTableView:(UITableView*)tableView;
+- (void)registerCellsInCollectionView:(UICollectionView *)collectionView;
 
 /**
  *  Return the identifier for the cell at the specified index.
@@ -102,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  @param cell      The cell to configure
  *  @param indexPath The indexPath of the cell
  */
-- (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath;
+- (void)configureCell:(WMFCell *)cell atIndexPath:(NSIndexPath*)indexPath;
 
 /**
  *  Estimated height of the cells in the section

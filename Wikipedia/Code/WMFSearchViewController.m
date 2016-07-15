@@ -287,7 +287,7 @@ static NSUInteger const kWMFMinResultsBeforeAutoFullTextSearch = 12;
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue*)segue sender:(id)sender {
-    if ([segue.destinationViewController isKindOfClass:[WMFArticleListTableViewController class]]) {
+    if ([segue.destinationViewController isKindOfClass:[WMFArticleListViewController class]]) {
         self.resultsListController = segue.destinationViewController;
         [self configureArticleList];
     }
@@ -641,7 +641,7 @@ static NSUInteger const kWMFMinResultsBeforeAutoFullTextSearch = 12;
 
 #pragma mark - WMFArticleListTableViewControllerDelegate
 
-- (void)listViewController:(WMFArticleListTableViewController*)listController didSelectArticleURL:(nonnull NSURL *)url{
+- (void)listViewController:(WMFArticleListViewController*)listController didSelectArticleURL:(nonnull NSURL *)url{
     //log tap through done in table
     UIViewController* presenter = [self presentingViewController];
     [self dismissViewControllerAnimated:YES completion:^{
@@ -649,12 +649,12 @@ static NSUInteger const kWMFMinResultsBeforeAutoFullTextSearch = 12;
     }];
 }
 
-- (UIViewController*)listViewController:(WMFArticleListTableViewController*)listController viewControllerForPreviewingArticleURL:(nonnull NSURL *)url{
+- (UIViewController*)listViewController:(WMFArticleListViewController*)listController viewControllerForPreviewingArticleURL:(nonnull NSURL *)url{
     WMFArticleViewController* vc = [[WMFArticleViewController alloc] initWithArticleURL:url dataStore:self.dataStore];
     return vc;
 }
 
-- (void)listViewController:(WMFArticleListTableViewController*)listController didCommitToPreviewedViewController:(UIViewController*)viewController {
+- (void)listViewController:(WMFArticleListViewController*)listController didCommitToPreviewedViewController:(UIViewController*)viewController {
     //log tap through done in table
     UIViewController* presenter = [self presentingViewController];
     [self dismissViewControllerAnimated:YES completion:^{

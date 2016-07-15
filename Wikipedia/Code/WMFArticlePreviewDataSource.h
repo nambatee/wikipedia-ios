@@ -2,7 +2,7 @@
 //  Copyright (c) 2015 Wikimedia Foundation. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <SSDataSources/SSArrayDataSource.h>
+#import "WMFDataSource.h"
 #import "WMFTitleListDataSource.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class MWKSavedPageList;
 @class MWKDataStore;
 
-@interface WMFArticlePreviewDataSource : SSArrayDataSource
+@interface WMFArticlePreviewDataSource : WMFDataSource
     <WMFTitleListDataSource>
 
 @property (nonatomic, strong, readonly, nullable) NSArray<MWKSearchResult*>* previewResults;
@@ -22,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
                      domainURL:(NSURL*)domainURL
                      dataStore:(MWKDataStore*)dataStore
                        fetcher:(WMFArticlePreviewFetcher*)fetcher NS_DESIGNATED_INITIALIZER;
-
-- (void)fetch;
 
 @end
 

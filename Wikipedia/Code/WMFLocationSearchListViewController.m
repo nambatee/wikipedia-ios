@@ -63,8 +63,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = MWLocalizedString(@"main-menu-nearby", nil);
-    [self.tableView registerNib:[WMFNearbyArticleTableViewCell wmf_classNib] forCellReuseIdentifier:[WMFNearbyArticleTableViewCell identifier]];
-    self.tableView.estimatedRowHeight = [WMFNearbyArticleTableViewCell estimatedRowHeight];
+#warning move
+//    [self.tableView registerNib:[WMFNearbyArticleTableViewCell wmf_classNib] forCellReuseIdentifier:[WMFNearbyArticleTableViewCell identifier]];
+//    self.tableView.estimatedRowHeight = [WMFNearbyArticleTableViewCell estimatedRowHeight];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

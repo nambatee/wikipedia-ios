@@ -12,6 +12,7 @@
 #import <BlocksKit/BlocksKit+UIKit.h>
 #import "MWKDataStore.h"
 #import "MWKUserDataStore.h"
+#import "WMFCell.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -149,7 +150,7 @@ static NSString* const WMFExploreSectionControllerException = @"WMFExploreSectio
     return [self cellIdentifier];
 }
 
-- (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath {
+- (void)configureCell:(WMFCell*)cell atIndexPath:(NSIndexPath*)indexPath {
     NSParameterAssert(indexPath);
     NSParameterAssert(cell);
     if (!cell || !indexPath) {

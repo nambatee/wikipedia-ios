@@ -31,31 +31,32 @@
     return self.dataStore.userDataStore.savedPageList;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    [self.tableView registerNib:[WMFArticleListTableViewCell wmf_classNib] forCellReuseIdentifier:[WMFArticleListTableViewCell identifier]];
-
-    self.tableView.estimatedRowHeight = [WMFArticleListTableViewCell estimatedRowHeight];
-
-    WMFRecentPagesDataSource* ds = [[WMFRecentPagesDataSource alloc] initWithRecentPagesList:[self historyList]];
-
-    ds.cellClass = [WMFArticleListTableViewCell class];
-
-    @weakify(self);
-    ds.cellConfigureBlock = ^(WMFArticleListTableViewCell* cell,
-                              MWKHistoryEntry* entry,
-                              UITableView* tableView,
-                              NSIndexPath* indexPath) {
-        @strongify(self);
-        MWKArticle* article = [[self dataStore] articleWithURL:entry.url];
-        cell.titleText       = article.url.wmf_title;
-        cell.descriptionText = [article.entityDescription wmf_stringByCapitalizingFirstCharacter];
-        [cell setImage:[article bestThumbnailImage]];
-    };
-
-    self.dataSource = ds;
-}
+#warning update
+//- (void)viewDidLoad {
+//    [super viewDidLoad];
+//
+//    [self.tableView registerNib:[WMFArticleListTableViewCell wmf_classNib] forCellReuseIdentifier:[WMFArticleListTableViewCell identifier]];
+//
+//    self.tableView.estimatedRowHeight = [WMFArticleListTableViewCell estimatedRowHeight];
+//
+//    WMFRecentPagesDataSource* ds = [[WMFRecentPagesDataSource alloc] initWithRecentPagesList:[self historyList]];
+//
+//    ds.cellClass = [WMFArticleListTableViewCell class];
+//
+//    @weakify(self);
+//    ds.cellConfigureBlock = ^(WMFArticleListTableViewCell* cell,
+//                              MWKHistoryEntry* entry,
+//                              UITableView* tableView,
+//                              NSIndexPath* indexPath) {
+//        @strongify(self);
+//        MWKArticle* article = [[self dataStore] articleWithURL:entry.url];
+//        cell.titleText       = article.url.wmf_title;
+//        cell.descriptionText = [article.entityDescription wmf_stringByCapitalizingFirstCharacter];
+//        [cell setImage:[article bestThumbnailImage]];
+//    };
+//
+//    self.dataSource = ds;
+//}
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
