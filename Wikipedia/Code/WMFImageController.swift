@@ -141,8 +141,7 @@ public class WMFImageController : NSObject {
         }
         
         let size = UInt(WMFParseSizePrefixFromSourceURL(url))
-        let articleWidth = UIScreen.mainScreen().wmf_articleImageWidthForScale()
-        if (size == articleWidth) {
+        if (size == UInt(NSNotFound) || size == UIScreen.mainScreen().wmf_articleImageWidthForScale()) {
             for legacySize in WMFImageController.commonLegacyImageSizes {
                 let possibleURLString = WMFChangeImageSourceURLSizePrefix(url.absoluteString, legacySize)
                 if let possibleURL = NSURL(string: possibleURLString) {
