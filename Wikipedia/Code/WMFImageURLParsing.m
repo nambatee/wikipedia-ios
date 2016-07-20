@@ -51,8 +51,15 @@ NSString* WMFParseUnescapedNormalizedImageNameFromSourceURL(NSURL* sourceURL)  _
     return WMFParseUnescapedNormalizedImageNameFromSourceURL(sourceURL.absoluteString);
 }
 
+NSInteger WMFParseSizePrefixFromSourceURL(NSURL* sourceURL)  __attribute__((overloadable)){
+    return WMFParseSizePrefixFromSourceURL(sourceURL.absoluteString);
+}
+
 NSInteger WMFParseSizePrefixFromSourceURL(NSString* sourceURL)  __attribute__((overloadable)){
     if (!sourceURL) {
+        return NSNotFound;
+    }
+    if (!WMFIsThumbURLString(sourceURL)) {
         return NSNotFound;
     }
     NSString* fileName = [sourceURL lastPathComponent];

@@ -177,7 +177,7 @@ static SavedArticlesFetcher* _articleFetcher = nil;
 
     NSArray<NSURL*>* URLs = [[article allImageURLs] allObjects];
     
-    [self.imageController cacheImagesWithURLsInBackground:URLs failure:failure success:success];
+    [self.imageController cacheLegacySavedArticleImagesWithURLsInBackground:URLs failure:failure success:success];
 }
 
 - (void)fetchGalleryDataForArticle:(MWKArticle*)article failure:(WMFErrorHandler)failure success:(WMFSuccessHandler)success {

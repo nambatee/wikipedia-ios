@@ -66,7 +66,6 @@ public class WMFImageController : NSObject {
     }
     
     // MARK: - Initialization
-    
     private static let defaultNamespace = "default"
     
     private static let _sharedInstance: WMFImageController = {
@@ -131,6 +130,45 @@ public class WMFImageController : NSObject {
             success(true)
         }
     }
+    
+    private static let commonLegacyImageSizes:[UInt] = [600, 450, 320, 300, 280, 256, 220, 192]
+    
+    public func cacheLegacySavedArticleImageWithURLInBackground(url: NSURL, failure: (ErrorType) -> Void, success: (Bool) -> Void) {
+        let key = self.cacheKeyForURL(url)
+        if(self.imageManager.imageCache.diskImageExistsWithKey(key)){
+            success(true)
+            return
+        }
+        
+        let size = UInt(WMFParseSizePrefixFromSourceURL(url))
+        let articleWidth = UIScreen.mainScreen().wmf_articleImageWidthForScale()
+        if (size == articleWidth) {
+            for size in WMFImageController.commonLegacyImageSizes {
+                let possibleURLString = WMFChangeImageSourceURLSizePrefix(url.absoluteString, size)
+                if let possibleURL = NSURL(string: possibleURLString) {
+                    let possibleKey = self.cacheKeyForURL(possibleURL)
+                    if (self.imageManager.imageCache.diskImageExistsWithKey(possibleKey)) {
+                        let existingImagePath = self.imageManager.imageCache.defaultCachePathForKey(possibleKey)
+                        let desiredImagePath = self.imageManager.imageCache.defaultCachePathForKey(key)
+                        do {
+                            try NSFileManager.defaultManager().moveItemAtPath(existingImagePath, toPath: desiredImagePath)
+                            success(true)
+                            return
+                        } catch let error {
+                            DDLogError("Error moving cached image \(error)")
+                        }
+                    }
+                }
+            }
+        }
+        
+        fetchImageWithURL(url, options: WMFImageController.backgroundImageFetchOptions, failure: failure) { (download) in
+            self.imageManager.imageCache.removeImageForKey(key, fromDisk: false, withCompletion: nil)
+            success(true)
+        }
+    }
+    
+    
     
     // MARK: - Simple Fetching
     
@@ -420,6 +458,49 @@ extension WMFImageController {
         return nil
     }
     
+    @objc public func cacheLegacySavedArticleImageWithURLInBackground(url: NSURL?, failure: (error: NSError) -> Void, success: (didCache: Bool) -> Void) -> AnyObject? {
+        guard let url = url else {
+            failure(error: WMFImageControllerError.InvalidOrEmptyURL as NSError)
+            return nil
+        }
+        
+        let metaFailure = { (error: ErrorType) in
+            failure(error: error as NSError)
+        }
+        cacheLegacySavedArticleImageWithURLInBackground(url, failure: metaFailure, success: success);
+        
+        return nil
+    }
+    
+    @objc public func cacheLegacySavedArticleImagesWithURLsInBackground(imageURLs: [NSURL], failure: (error: NSError) -> Void, success: () -> Void) -> AnyObject? {
+        let cacheGroup = dispatch_group_create()
+        var errors = [NSError]()
+        
+        for imageURL in imageURLs {
+            dispatch_group_enter(cacheGroup)
+            
+            let failure = { (error: ErrorType) in
+                errors.append(error as NSError)
+                dispatch_group_leave(cacheGroup)
+            }
+            
+            let success = { (didCache: Bool) in
+                dispatch_group_leave(cacheGroup)
+            }
+            
+            cacheLegacySavedArticleImageWithURLInBackground(imageURL, failure:failure, success: success)
+        }
+        
+        dispatch_group_notify(cacheGroup, dispatch_get_main_queue(), {
+            if let error = errors.first {
+                failure(error: error)
+            } else {
+                success()
+            }
+        })
+        
+        return nil
+    }
     
     @objc public func cacheImagesWithURLsInBackground(imageURLs: [NSURL], failure: (error: NSError) -> Void, success: () -> Void) -> AnyObject? {
         let cacheGroup = dispatch_group_create()
