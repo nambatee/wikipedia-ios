@@ -131,7 +131,7 @@ public class WMFImageController : NSObject {
         }
     }
     
-    private static let commonLegacyImageSizes:[UInt] = [600, 450, 320, 300, 280, 256, 220, 192]
+    private static let commonLegacyImageSizes:[UInt] = [220, 330, 440, 600, 560, 500, 450, 420, 400, 375, 340, 280, 255, 250, 170, 165, 152, 120, 110, 101] //most legacy images are 220, 330, or 440
     
     public func cacheLegacySavedArticleImageWithURLInBackground(url: NSURL, failure: (ErrorType) -> Void, success: (Bool) -> Void) {
         let key = self.cacheKeyForURL(url)
