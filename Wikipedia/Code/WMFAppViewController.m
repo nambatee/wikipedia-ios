@@ -71,6 +71,10 @@ static NSUInteger const WMFAppTabCount = WMFAppTabTypeRecent + 1;
 
 static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
 
+static NSUInteger const WMFMaximumSavedPagesBeforePromptingUserToRedownload = 5;
+
+static NSTimeInterval const WMFTimeBeforeRepromptingUserToRedownloadSavedPages = 60 * 30; //30 minutes
+
 @interface WMFAppViewController ()<UITabBarControllerDelegate, UINavigationControllerDelegate>
 
 @property (nonatomic, strong) IBOutlet UIView* splashView;
@@ -213,7 +217,7 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
 
     @weakify(self)
 
-    [self.savedArticlesFetcher fetchAndObserveSavedPageList];
+    [self.savedArticlesFetcher start];
     if ([[NSProcessInfo processInfo] wmf_isOperatingSystemMajorVersionAtLeast:9]) {
         self.spotlightManager = [[WMFSavedPageSpotlightManager alloc] initWithDataStore:self.session.dataStore];
     }
@@ -245,6 +249,8 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
         [self showExplore];
     }
 
+    [self cacheSavedPageDataPromptingUserIfNeeded];
+
     if (FBTweakValue(@"Alerts", @"General", @"Show error on launch", NO)) {
         [[WMFAlertManager sharedInstance] showErrorAlert:[NSError errorWithDomain:@"WMFTestDomain" code:0 userInfo:@{NSLocalizedDescriptionKey: @"There was an error"}] sticky:NO dismissPreviousAlerts:NO tapCallBack:NULL];
     }
@@ -265,6 +271,7 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
     [self.dataStore.userDataStore.historyList prune];
     [self.dataStore startCacheRemoval];
     [[[SessionSingleton sharedInstance] dataStore] clearMemoryCache];
+    [self.savedArticlesFetcher cancelAllDownloads];
 }
 
 #pragma mark - Memory Warning
@@ -273,6 +280,47 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
     [super didReceiveMemoryWarning];
     [[WMFImageController sharedInstance] clearMemoryCache];
     [[[SessionSingleton sharedInstance] dataStore] clearMemoryCache];
+}
+
+#pragma mark - Saved Page Caching
+
+- (void)cacheSavedPageDataPromptingUserIfNeeded {
+    //Have we already finished the redownload? If not, are there enough pages to even ask?
+    if (![[NSUserDefaults standardUserDefaults] wmf_dateFinishRedownloadOfImageData] && [[self userDataStore].savedPageList countOfEntries] > WMFMaximumSavedPagesBeforePromptingUserToRedownload) {
+        //Did we resume and already start? If so, has it been long enough to be worth re-asking or should we just restart?
+        if ([[NSUserDefaults standardUserDefaults] wmf_datePromptedForRedownloadOfImageData] && [[NSDate date] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] wmf_datePromptedForRedownloadOfImageData]] < WMFTimeBeforeRepromptingUserToRedownloadSavedPages) {
+            [self.savedArticlesFetcher downloadAllUncachedData];
+        } else {
+            NSString* alertTitle            = nil;
+            NSString* alertMessage          = nil;
+            NSString* alertStartButtonTitle = nil;
+
+            if (![[NSUserDefaults standardUserDefaults] wmf_dateStartedRedownloadOfImageData]) {
+                alertTitle            = @"Download?";
+                alertMessage          = @"Wikipedia needs to redownload images for your saved pages.";
+                alertStartButtonTitle = @"Download now";
+            } else {
+                alertTitle            = @"Resume?";
+                alertMessage          = @"Wikipedia needs to finish redownloading images for your saved pages.";
+                alertStartButtonTitle = @"Continue";
+            }
+
+            UIAlertController* alert = [UIAlertController alertControllerWithTitle:alertTitle message:alertMessage preferredStyle:UIAlertControllerStyleAlert];
+
+            [alert addAction:[UIAlertAction actionWithTitle:alertStartButtonTitle style:UIAlertActionStyleDefault handler:^(UIAlertAction* _Nonnull action) {
+                [[NSUserDefaults standardUserDefaults] wmf_setDateStartedRedownloadOfImageData:[NSDate date]];
+                [self.savedArticlesFetcher downloadAllUncachedData];
+            }]];
+
+            [alert addAction:[UIAlertAction actionWithTitle:@"Later" style:UIAlertActionStyleCancel handler:NULL]];
+
+            [self presentViewController:alert animated:YES completion:NULL];
+            [[NSUserDefaults standardUserDefaults] wmf_setDatePromptForRedownloadOfImageData:[NSDate date]];
+        }
+    } else {
+        [[NSUserDefaults standardUserDefaults] wmf_setDateFinishRedownloadOfImageData:[NSDate date]];
+        [self.savedArticlesFetcher downloadAllUncachedData];
+    }
 }
 
 #pragma mark - Shortcut
@@ -443,6 +491,7 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
 - (BOOL)exploreViewControllerIsDisplayingContent {
     return [self navigationControllerForTab:WMFAppTabTypeExplore].viewControllers.count > 1;
 }
+
 - (MWKTitle*)onscreenTitle {
     UINavigationController* navVC = [self navigationControllerForTab:self.rootTabBarController.selectedIndex];
     if ([navVC.topViewController isKindOfClass:[WMFArticleViewController class]]) {
@@ -465,6 +514,7 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
     if (!_savedArticlesFetcher) {
         _savedArticlesFetcher =
             [[SavedArticlesFetcher alloc] initWithSavedPageList:[[[SessionSingleton sharedInstance] userDataStore] savedPageList]];
+        _savedArticlesFetcher.fetchFinishedDelegate = self;
     }
     return _savedArticlesFetcher;
 }
@@ -647,9 +697,9 @@ static NSString* const WMFDidShowOnboarding = @"DidShowOnboarding5.0";
         [exploreNavController dismissViewControllerAnimated:NO completion:NULL];
     }
     MWKSite* site = [[[MWKLanguageLinkController sharedInstance] appLanguage] site];
-    [self.randomFetcher fetchRandomArticleWithSite:site failure:^(NSError *error) {
+    [self.randomFetcher fetchRandomArticleWithSite:site failure:^(NSError* error) {
         [[WMFAlertManager sharedInstance] showErrorAlert:error sticky:NO dismissPreviousAlerts:NO tapCallBack:NULL];
-    } success:^(MWKSearchResult *result) {
+    } success:^(MWKSearchResult* result) {
         MWKTitle* title = [site titleWithString:result.displayTitle];
         [[self exploreViewController] wmf_pushArticleWithTitle:title dataStore:self.session.dataStore animated:YES];
     }];
@@ -676,6 +726,25 @@ static NSString* const WMFDidShowOnboarding = @"DidShowOnboarding5.0";
                                                           withManager:[QueuesSingleton sharedInstance].assetsFetchManager
                                                                maxAge:kWMFMaxAgeDefault];
     }];
+}
+
+#pragma mark - SavedArticlesFetcherDelegate
+
+- (void)savedArticlesFetcher:(SavedArticlesFetcher*)savedArticlesFetcher
+               didFetchTitle:(MWKTitle*)title
+                     article:(MWKArticle* __nullable)article
+                    progress:(CGFloat)progress
+                       error:(NSError* __nullable)error {
+    //progress?
+}
+
+- (void)fetchFinished:(id)sender
+          fetchedData:(id)fetchedData
+               status:(FetchFinalStatus)status
+                error:(NSError*)error {
+    if (!error) {
+        [[NSUserDefaults standardUserDefaults] wmf_setDateFinishRedownloadOfImageData:[NSDate date]];
+    }
 }
 
 #pragma mark - UITabBarControllerDelegate

@@ -69,10 +69,7 @@ static SavedArticlesFetcher* _articleFetcher = nil;
 
 #pragma mark - Fetching
 
-- (void)fetchAndObserveSavedPageList {
-    // build up initial state of current list
-    [self fetchUncachedEntries:self.savedPageList.entries];
-
+- (void)start {
     // observe subsequent changes
     [self.KVOControllerNonRetaining observe:self.savedPageList
                                     keyPath:WMF_SAFE_KEYPATH(self.savedPageList, entries)
@@ -80,7 +77,11 @@ static SavedArticlesFetcher* _articleFetcher = nil;
                                      action:@selector(savedPageListDidChange:)];
 }
 
-- (void)cancelFetch {
+- (void)downloadAllUncachedData {
+    [self fetchUncachedEntries:self.savedPageList.entries];
+}
+
+- (void)cancelAllDownloads {
     [self cancelFetchForEntries:self.savedPageList.entries];
 }
 
@@ -140,7 +141,7 @@ static SavedArticlesFetcher* _articleFetcher = nil;
         self.fetchOperationsByArticleTitle[title] =
             [self.articleFetcher fetchArticleForPageTitle:title progress:NULL].thenOn(self.accessQueue, ^(MWKArticle* article){
             @strongify(self);
-            [self downloadImageDataForArticle:article failure:^(NSError *error) {
+            [self downloadImageDataForArticle:article failure:^(NSError* error) {
                 dispatch_async(self.accessQueue, ^{
                     [self didFetchArticle:article title:title error:error];
                     failure(error);
@@ -163,29 +164,27 @@ static SavedArticlesFetcher* _articleFetcher = nil;
 }
 
 - (void)downloadImageDataForArticle:(MWKArticle*)article failure:(WMFErrorHandler)failure success:(WMFSuccessHandler)success {
-    [self fetchAllImagesInArticle:article failure:^(NSError *error) {
+    [self fetchAllImagesInArticle:article failure:^(NSError* error) {
         failure([NSError wmf_savedPageImageDownloadError]);
     } success:^{
         [self fetchGalleryDataForArticle:article failure:failure success:success];
     }];
 }
 
-
 - (void)fetchAllImagesInArticle:(MWKArticle*)article failure:(WMFErrorHandler)failure success:(WMFSuccessHandler)success {
     WMFURLCache* cache = (WMFURLCache*)[NSURLCache sharedURLCache];
     [cache permanentlyCacheImagesForArticle:article];
 
     NSArray<NSURL*>* URLs = [[article allImageURLs] allObjects];
-    
+
     [self.imageController cacheImagesWithURLsInBackground:URLs failure:failure success:success];
 }
 
 - (void)fetchGalleryDataForArticle:(MWKArticle*)article failure:(WMFErrorHandler)failure success:(WMFSuccessHandler)success {
     WMF_TECH_DEBT_TODO(check whether on - disk image info matches what we are about to fetch)
     @weakify(self);
-    [self fetchImageInfoForImagesInArticle:article failure:^(NSError *error) {
-        
-    } success:^(NSArray *info) {
+    [self fetchImageInfoForImagesInArticle:article failure:^(NSError* error) {
+    } success:^(NSArray* info) {
         @strongify(self);
         if (!self) {
             failure([NSError cancelledError]);
@@ -195,10 +194,9 @@ static SavedArticlesFetcher* _articleFetcher = nil;
             DDLogVerbose(@"No gallery images to fetch.");
             success();
         }
-        
-        NSArray *URLs = [info valueForKey:@"imageThumbURL"];
+
+        NSArray* URLs = [info valueForKey:@"imageThumbURL"];
         [self.imageController cacheImagesWithURLsInBackground:URLs failure:failure success:success];
-        
     }];
 }
 
@@ -215,10 +213,10 @@ static SavedArticlesFetcher* _articleFetcher = nil;
         return;
     }
 
-    for (NSString *canonicalFilename in imageFileTitles) {
+    for (NSString* canonicalFilename in imageFileTitles) {
         [self.imageInfoFetcher fetchGalleryInfoForImage:canonicalFilename fromSite:article.title.site];
     }
-    
+
     PMKJoin([[imageFileTitles bk_map:^AnyPromise*(NSString* canonicalFilename) {
         return [self.imageInfoFetcher fetchGalleryInfoForImage:canonicalFilename fromSite:article.title.site];
     }] bk_reject:^BOOL (id obj) {

@@ -38,9 +38,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)getProgress:(WMFProgressHandler)progressBlock;
 
-- (void)fetchAndObserveSavedPageList;
+/**
+ *  Start observing the saved page list and cache any articles and image data when itmes are added or removed.
+ */
+- (void)start;
 
-- (void)cancelFetch;
+/**
+ *  Downloads any uncached articles and related images
+ *  Will not redownload anything already cached
+ */
+- (void)downloadAllUncachedData;
+
+
+/**
+ *  Stop any in progress downloads of article and image data 
+ */
+- (void)cancelAllDownloads;
+
 
 @end
 

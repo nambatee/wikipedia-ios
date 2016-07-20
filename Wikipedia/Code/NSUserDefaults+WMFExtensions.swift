@@ -7,6 +7,9 @@ let WMFAppResignActiveDateKey = "WMFAppResignActiveDateKey"
 let WMFOpenArticleTitleKey = "WMFOpenArticleTitleKey"
 let WMFAppSiteKey = "Domain"
 let WMFSearchLanguageKey = "WMFSearchLanguageKey"
+let WMFDidPromptForRedownloadOfImagesKey = "WMFDidPromptForRedownloadOfImagesKey"
+let WMFDidStartRedownloadOfImagesKey = "WMFDidStartRedownloadOfImagesKey"
+let WMFDidFinishRedownloadOfImagesKey = "WMFDidFinishRedownloadOfImagesKey"
 
 
 extension NSUserDefaults {
@@ -168,7 +171,6 @@ extension NSUserDefaults {
     public func wmf_setDidPeekTableOfContents(peeked: Bool) {
         self.setObject(NSNumber(bool: peeked), forKey: "PeekTableOfContents")
         self.synchronize()
-        
     }
     
     public func wmf_didPeekTableOfContents() -> Bool {
@@ -178,6 +180,32 @@ extension NSUserDefaults {
             return false
         }
     }
+    
+    public func wmf_setDatePromptForRedownloadOfImageData(date: NSDate) {
+        self.setObject(date, forKey: WMFDidPromptForRedownloadOfImagesKey)
+        self.synchronize()
+    }
 
+    public func wmf_datePromptedForRedownloadOfImageData() -> NSDate? {
+        return self.objectForKey(WMFDidPromptForRedownloadOfImagesKey) as? NSDate
+    }
+
+    public func wmf_setDateStartedRedownloadOfImageData(date: NSDate) {
+        self.setObject(date, forKey: WMFDidStartRedownloadOfImagesKey)
+        self.synchronize()
+    }
+    
+    public func wmf_dateStartedRedownloadOfImageData() -> NSDate? {
+        return self.objectForKey(WMFDidStartRedownloadOfImagesKey) as? NSDate
+    }
+    
+    public func wmf_setDateFinishRedownloadOfImageData(date: NSDate) {
+        self.setObject(date, forKey: WMFDidFinishRedownloadOfImagesKey)
+        self.synchronize()
+    }
+    
+    public func wmf_dateFinishRedownloadOfImageData() -> NSDate? {
+        return self.objectForKey(WMFDidFinishRedownloadOfImagesKey) as? NSDate
+    }
 
 }
