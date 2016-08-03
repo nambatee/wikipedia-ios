@@ -69,6 +69,7 @@
     
     NSMutableArray *attributesArray = [NSMutableArray array];
     
+    
     [self.info enumerateSectionsWithBlock:^(WMFCVLSection * _Nonnull section, NSUInteger idx, BOOL * _Nonnull stop) {
         if (CGRectIntersectsRect(section.frame, rect)) {
             [section enumerateLayoutAttributesWithBlock:^(WMFCVLAttributes *attributes, BOOL *stop) {
@@ -78,6 +79,19 @@
             }];
         }
     }];
+    
+#if DEBUG
+    NSMutableIndexSet *headerSections = [NSMutableIndexSet indexSet];
+    for (UICollectionViewLayoutAttributes *attributes in attributesArray) {
+        NSLog(@"\n%i.%i:\t%@", (int)attributes.indexPath.section, (int)attributes.indexPath.row, attributes.representedElementKind);
+        if ([attributes.representedElementKind isEqualToString:UICollectionElementKindSectionHeader]) {
+            if ([headerSections containsIndex:attributes.indexPath.section]) {
+                NSLog(@"bad");
+            }
+            [headerSections addIndex:attributes.indexPath.section];
+        }
+    }
+#endif
     
     return attributesArray;
 }
@@ -140,6 +154,20 @@
     context.preferredLayoutAttributes = preferredAttributes;
     context.originalLayoutAttributes = originalAttributes;
     [self.info updateWithInvalidationContext:context delegate:self.delegate collectionView:self.collectionView];
+    
+#if DEBUG
+    for (NSIndexPath *indexPath in context.invalidatedItemIndexPaths) {
+        assert(indexPath.section > originalAttributes.indexPath.section || (indexPath.section == originalAttributes.indexPath.section && indexPath.item >= originalAttributes.indexPath.item));
+    }
+    
+    for (NSIndexPath *indexPath in context.invalidatedSupplementaryIndexPaths[UICollectionElementKindSectionHeader]) {
+        assert(indexPath.section >= originalAttributes.indexPath.section);
+    }
+    
+    for (NSIndexPath *indexPath in context.invalidatedSupplementaryIndexPaths[UICollectionElementKindSectionFooter]) {
+        assert(indexPath.section >= originalAttributes.indexPath.section);
+    }
+#endif
     return context;
 }
 
@@ -151,6 +179,118 @@
         [self.info updateWithInvalidationContext:context delegate:self.delegate collectionView:self.collectionView];
     }
     [super invalidateLayoutWithContext:context];
+}
+
+#pragma mark - UIUpdateSupportHooks
+
+- (void)prepareForCollectionViewUpdates:(NSArray<UICollectionViewUpdateItem *> *)updateItems {
+    [super prepareForCollectionViewUpdates:updateItems];
+    for (UICollectionViewUpdateItem *updateItem in updateItems) {
+        NSInteger section = updateItem.indexPathBeforeUpdate.section;
+        NSInteger item = updateItem.indexPathBeforeUpdate.item;
+        if (item > [self numberOfItemsInSection:section]) {
+            switch (updateItem.updateAction) {
+                case UICollectionUpdateActionInsert:
+                    NSLog(@"insert");
+                    break;
+                case UICollectionUpdateActionDelete:
+                    NSLog(@"delete");
+                    break;
+                case UICollectionUpdateActionReload:
+                    NSLog(@"reload");
+                    break;
+                case UICollectionUpdateActionMove:
+                    NSLog(@"move");
+                    break;
+                case UICollectionUpdateActionNone:
+                default:
+                    break;
+            }
+        } else {
+            switch (updateItem.updateAction) {
+                case UICollectionUpdateActionInsert:
+                case UICollectionUpdateActionDelete:
+                case UICollectionUpdateActionReload:
+                case UICollectionUpdateActionMove:
+                case UICollectionUpdateActionNone:
+                default:
+                    break;
+            }
+        }
+    }
+}
+
+- (void)finalizeCollectionViewUpdates {
+    [super finalizeCollectionViewUpdates];
+}
+
+- (void)prepareForAnimatedBoundsChange:(CGRect)oldBounds {
+    [super prepareForAnimatedBoundsChange:oldBounds];
+}
+
+- (void)finalizeAnimatedBoundsChange {
+    [super finalizeAnimatedBoundsChange];
+}
+
+- (void)prepareForTransitionToLayout:(UICollectionViewLayout *)newLayout {
+    
+}
+
+- (nullable UICollectionViewLayoutAttributes *)initialLayoutAttributesForAppearingItemAtIndexPath:(NSIndexPath *)itemIndexPath {
+    WMFCVLAttributes *attributes = [[self layoutAttributesForItemAtIndexPath:itemIndexPath] copy];
+    attributes.alpha = 0;
+    return attributes;
+}
+
+- (nullable UICollectionViewLayoutAttributes *)finalLayoutAttributesForDisappearingItemAtIndexPath:(NSIndexPath *)itemIndexPath {
+    WMFCVLAttributes *attributes = [[self layoutAttributesForItemAtIndexPath:itemIndexPath] copy];
+    attributes.alpha = 0;
+    return attributes;
+}
+
+- (nullable UICollectionViewLayoutAttributes *)initialLayoutAttributesForAppearingSupplementaryElementOfKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)elementIndexPath {
+    WMFCVLAttributes *attributes = [[self layoutAttributesForSupplementaryViewOfKind:elementKind atIndexPath:elementIndexPath] copy];
+    attributes.alpha = 0;
+    return attributes;
+}
+
+- (nullable UICollectionViewLayoutAttributes *)finalLayoutAttributesForDisappearingSupplementaryElementOfKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)elementIndexPath {
+    WMFCVLAttributes *attributes = [[self layoutAttributesForSupplementaryViewOfKind:elementKind atIndexPath:elementIndexPath] copy];
+    attributes.alpha = 0;
+    return attributes;
+}
+
+- (nullable UICollectionViewLayoutAttributes *)initialLayoutAttributesForAppearingDecorationElementOfKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)decorationIndexPath {
+    WMFCVLAttributes *attributes = [[self layoutAttributesForDecorationViewOfKind:elementKind atIndexPath:decorationIndexPath] copy];
+    attributes.alpha = 0;
+    return attributes;
+}
+
+- (nullable UICollectionViewLayoutAttributes *)finalLayoutAttributesForDisappearingDecorationElementOfKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)decorationIndexPath {
+    WMFCVLAttributes *attributes = [[self layoutAttributesForDecorationViewOfKind:elementKind atIndexPath:decorationIndexPath] copy];
+    attributes.alpha = 0;
+    return attributes;
+}
+
+
+- (NSArray<NSIndexPath *> *)indexPathsToDeleteForSupplementaryViewOfKind:(NSString *)elementKind {
+    NSArray<NSIndexPath *> *indexPathsToDelete = [super indexPathsToDeleteForSupplementaryViewOfKind:elementKind];
+    return @[];
+}
+
+- (NSArray<NSIndexPath *> *)indexPathsToDeleteForDecorationViewOfKind:(NSString *)elementKind {
+    NSArray<NSIndexPath *> *indexPathsToDelete = [super indexPathsToDeleteForDecorationViewOfKind:elementKind];
+    return indexPathsToDelete;
+}
+
+- (NSArray<NSIndexPath *> *)indexPathsToInsertForSupplementaryViewOfKind:(NSString *)elementKind {
+    NSArray<NSIndexPath *> *indexPathsToInsert = [super indexPathsToInsertForSupplementaryViewOfKind:elementKind];
+    return @[];
+}
+
+- (NSArray<NSIndexPath *> *)indexPathsToInsertForDecorationViewOfKind:(NSString *)elementKind {
+    NSArray<NSIndexPath *> *indexPathsToInsert = [super indexPathsToInsertForDecorationViewOfKind:elementKind];
+    return indexPathsToInsert;
 }
 
 @end
