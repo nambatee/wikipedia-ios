@@ -20,6 +20,9 @@ function getZoomLevel() {
     // From: http://stackoverflow.com/a/5078596/135557
     var deviceWidth = (Math.abs(window.orientation) === 90) ? screen.height : screen.width;
     var zoom = deviceWidth / window.innerWidth;
+                                                                                              
+return 1.0;
+                                                                                              
     return zoom;
 }
 
@@ -43,6 +46,10 @@ exports.getElementRect = function(element) {
         Width: rect.width * zoom,
         Height: rect.height * zoom
     };
+                                                                                              
+console.log("x " + zoomedRect.X + " y " + zoomedRect.Y);
+                                                                                              
+                                                                                              
     return zoomedRect;
 };
 

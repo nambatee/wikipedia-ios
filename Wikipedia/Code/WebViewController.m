@@ -36,6 +36,7 @@
 #import "WMFFindInPageKeyboardBar.h"
 #import "UIView+WMFDefaultNib.h"
 
+#import "ElementRectDebugView.h"
 
 typedef NS_ENUM (NSInteger, WMFWebViewAlertType) {
     WMFWebViewAlertZeroWebPage,
@@ -65,6 +66,8 @@ NSString* const WMFCCBySALicenseURL =
 @property (nonatomic) NSInteger findInPageSelectedMatchIndex;
 @property (nonatomic) BOOL disableMinimizeFindInPage;
 @property (nonatomic, readwrite, retain) WMFFindInPageKeyboardBar *inputAccessoryView;
+
+@property (nonatomic, strong) ElementRectDebugView* debugView;
 
 @end
 
@@ -535,6 +538,16 @@ NSString* const WMFCCBySALicenseURL =
     [self observeScrollViewContentSize];
 
     [self displayArticle];
+    
+    self.debugView = [[ElementRectDebugView alloc] init];
+    self.debugView.opaque = NO;
+    self.debugView.userInteractionEnabled = NO;
+    self.debugView.alpha = 0.2;
+    self.debugView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.debugView];
+    [self.debugView mas_makeConstraints:^(MASConstraintMaker* make) {
+        make.leading.trailing.top.and.bottom.equalTo(self.view);
+    }];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -852,6 +865,7 @@ NSString* const WMFCCBySALicenseURL =
         [self.webView.scrollView scrollRectToVisible:CGRectMake(0, 1, 1, 1) animated:animated];
     } else {
         if (!animated) {
+//works
             [self.webView wmf_scrollToFragment:fragment];
             return;
         }
@@ -1189,6 +1203,28 @@ NSString* const WMFCCBySALicenseURL =
     if ([self.delegate respondsToSelector:@selector(webViewController:scrollViewDidScroll:)]) {
         [self.delegate webViewController:self scrollViewDidScroll:scrollView];
     }
+    
+NSLog(@"DID SCROLL %@", NSStringFromCGPoint(scrollView.contentOffset));
+
+    
+    
+[self.webView getScreenRectForHtmlElementWithId:@"section_heading_and_content_block_1" completion:^(CGRect rect) {
+    self.debugView.debugRect = rect;
+    [self.debugView setNeedsDisplay];
+    [self.debugView layoutIfNeeded];
+}];
+    
+/*
+rather than this approach, which overlays a view over the web view,
+it would probably be better to add a sub view over the web view's scroll view
+that way the highlighted element positions wouldn't have to be updated on scroll.
+would need to use getScrollViewRectForHtmlElementWithId to get rects
+*/
+    
+    
+    
+    
+    
     [self minimizeFindInPage];
 }
 
