@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+environment = ARGV[0]
+
+if environment == 'prod'
+  exec("git checkout release && git pull && git merge origin/master && git merge origin/release-beta && git push")
+else
+  exec("git checkout release-beta && git pull && git merge origin/master && git merge origin/beta && git merge origin/develop && git push")
+end
