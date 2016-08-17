@@ -91,6 +91,7 @@
     
     [[BITHockeyManager sharedHockeyManager] wmf_setupAndStart];
     [PiwikTracker wmf_start];
+    [[WMFTweaks sharedInstance] registerTweaks];
 
     [[NSUserDefaults standardUserDefaults] wmf_setAppLaunchDate:[NSDate date]];
     [[NSUserDefaults standardUserDefaults] wmf_setAppInstallDateIfNil:[NSDate date]];

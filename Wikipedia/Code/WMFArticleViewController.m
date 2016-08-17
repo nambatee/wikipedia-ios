@@ -146,7 +146,7 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
 @implementation WMFArticleViewController
 
 + (void)load {
-    [self registerTweak];
+//    [self registerTweak];
 }
 
 - (void)dealloc {
@@ -1287,7 +1287,13 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
 }
 
 - (NSArray<NSNumber*>*)fontSizeMultipliers {
-    return @[@70, @85, @100, @115, @130, @145, @160];
+    return @[[[WMFTweaks sharedInstance] fontSize1],
+             [[WMFTweaks sharedInstance] fontSize2],
+             [[WMFTweaks sharedInstance] fontSize3],
+             [[WMFTweaks sharedInstance] fontSize4],
+             [[WMFTweaks sharedInstance] fontSize5],
+             [[WMFTweaks sharedInstance] fontSize6],
+             [[WMFTweaks sharedInstance] fontSize7]];
 
 //    return @[@(FBTweakValue(@"Article", @"Font Size", @"Step 1", 70)),
 //             @(FBTweakValue(@"Article", @"Font Size", @"Step 2", 85)),

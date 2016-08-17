@@ -7,6 +7,7 @@
    Done as a separate header so it can be reused in unit tests.
  */
 
+#import "WMFTweaks.h"
 #import "WMFLogging.h"
 #import "WMFDirectoryPaths.h"
 #import "WMFGCDHelpers.h"

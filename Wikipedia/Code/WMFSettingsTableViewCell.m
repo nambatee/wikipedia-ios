@@ -91,6 +91,7 @@
 }
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     self.disclosureIcon.tintColor = [UIColor wmf_colorWithHex:0xC7C7C7 alpha:1.0];
 }
 
