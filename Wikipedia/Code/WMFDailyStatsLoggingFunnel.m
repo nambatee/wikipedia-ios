@@ -18,7 +18,7 @@ static NSString* const kAppInstallIdKey  = @"appInstallID";
 }
 
 - (BOOL)shouldLogInstallDays {
-    NSDate* date = [[NSUserDefaults standardUserDefaults] wmf_dateLastDailyLoggingStatsSent];
+    NSDate* date = [[NSUserDefaults wmf_userDefaults] wmf_dateLastDailyLoggingStatsSent];
     if (date == nil) {
         return YES;
     } else if ([[NSCalendar currentCalendar] isDateInToday:date]) {
@@ -33,7 +33,7 @@ static NSString* const kAppInstallIdKey  = @"appInstallID";
         return;
     }
 
-    NSDate* date = [[NSUserDefaults standardUserDefaults] wmf_appInstallDate];
+    NSDate* date = [[NSUserDefaults wmf_userDefaults] wmf_appInstallDate];
     NSParameterAssert(date);
     if (!date) {
         return;
@@ -41,7 +41,7 @@ static NSString* const kAppInstallIdKey  = @"appInstallID";
 
     NSInteger days = [[NSDate date] distanceInDaysToDate:date];
     [self log:@{kAppInstallAgeKey: @(days)}];
-    [[NSUserDefaults standardUserDefaults] wmf_setDateLastDailyLoggingStatsSent:date];
+    [[NSUserDefaults wmf_userDefaults] wmf_setDateLastDailyLoggingStatsSent:date];
 }
 
 - (NSDictionary*)preprocessData:(NSDictionary*)eventData {

@@ -39,7 +39,7 @@ static NSString* const WMFRelatedSectionBlackListFileExtension = @"plist";
 #pragma mark - Legacy Migration
 
 - (void)migrateLegacyDataIfNeeded {
-    if ([[NSUserDefaults standardUserDefaults] wmf_didMigrateBlackList]) {
+    if ([[NSUserDefaults wmf_userDefaults] wmf_didMigrateBlackList]) {
         return;
     }
 
@@ -73,7 +73,7 @@ static NSString* const WMFRelatedSectionBlackListFileExtension = @"plist";
             return urls;
         }];
 
-        [[NSUserDefaults standardUserDefaults] wmf_setDidMigrateBlackList:YES];
+        [[NSUserDefaults wmf_userDefaults] wmf_setDidMigrateBlackList:YES];
     }
 }
 

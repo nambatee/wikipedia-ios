@@ -451,7 +451,7 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
 }
 
 - (BOOL)shouldShowExploreScreenOnLaunch {
-    NSDate* resignActiveDate = [[NSUserDefaults standardUserDefaults] wmf_appResignActiveDate];
+    NSDate* resignActiveDate = [[NSUserDefaults wmf_userDefaults] wmf_appResignActiveDate];
     if (!resignActiveDate) {
         return NO;
     }
@@ -562,13 +562,13 @@ static NSString* const WMFDidShowOnboarding = @"DidShowOnboarding5.0";
         || [[NSProcessInfo processInfo] environment][@"WMFShowWelcomeView"].boolValue) {
         return YES;
     }
-    NSNumber* didShow = [[NSUserDefaults standardUserDefaults] objectForKey:WMFDidShowOnboarding];
+    NSNumber* didShow = [[NSUserDefaults wmf_userDefaults] objectForKey:WMFDidShowOnboarding];
     return !didShow.boolValue;
 }
 
 - (void)setDidShowOnboarding {
-    [[NSUserDefaults standardUserDefaults] setObject:@YES forKey:WMFDidShowOnboarding];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [[NSUserDefaults wmf_userDefaults] setObject:@YES forKey:WMFDidShowOnboarding];
+    [[NSUserDefaults wmf_userDefaults] synchronize];
 }
 
 - (void)presentOnboardingIfNeededWithCompletion:(void (^)(BOOL didShowOnboarding))completion {
@@ -622,7 +622,7 @@ static NSString* const WMFDidShowOnboarding = @"DidShowOnboarding5.0";
 #pragma mark - Last Read Article
 
 - (BOOL)shouldShowLastReadArticleOnLaunch {
-    NSURL* lastRead = [[NSUserDefaults standardUserDefaults] wmf_openArticleURL];
+    NSURL* lastRead = [[NSUserDefaults wmf_userDefaults] wmf_openArticleURL];
     if (!lastRead) {
         return NO;
     }
@@ -631,7 +631,7 @@ static NSString* const WMFDidShowOnboarding = @"DidShowOnboarding5.0";
         return YES;
     }
 
-    NSDate* resignActiveDate = [[NSUserDefaults standardUserDefaults] wmf_appResignActiveDate];
+    NSDate* resignActiveDate = [[NSUserDefaults wmf_userDefaults] wmf_appResignActiveDate];
     if (!resignActiveDate) {
         return NO;
     }
@@ -646,7 +646,7 @@ static NSString* const WMFDidShowOnboarding = @"DidShowOnboarding5.0";
 }
 
 - (void)showLastReadArticleAnimated:(BOOL)animated {
-    NSURL* lastRead = [[NSUserDefaults standardUserDefaults] wmf_openArticleURL];
+    NSURL* lastRead = [[NSUserDefaults wmf_userDefaults] wmf_openArticleURL];
     [self showArticleForURL:lastRead animated:animated];
 }
 

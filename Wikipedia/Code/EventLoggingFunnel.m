@@ -11,6 +11,7 @@
 #import "QueuesSingleton.h"
 #import "SessionSingleton.h"
 #import "MediaWikiKit.h"
+#import "Wikipedia-Swift.h"
 
 @implementation EventLoggingFunnel
 
@@ -56,11 +57,11 @@
 
 - (NSString*)persistentUUID:(NSString*)key {
     NSString* prefKey = [@"EventLoggingID-" stringByAppendingString:key];
-    NSString* uuid    = [[NSUserDefaults standardUserDefaults] objectForKey:prefKey];
+    NSString* uuid    = [[NSUserDefaults wmf_userDefaults] objectForKey:prefKey];
     if (!uuid) {
         uuid = [self singleUseUUID];
-        [[NSUserDefaults standardUserDefaults] setObject:uuid forKey:prefKey];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        [[NSUserDefaults wmf_userDefaults] setObject:uuid forKey:prefKey];
+        [[NSUserDefaults wmf_userDefaults] synchronize];
     }
     return uuid;
 }
@@ -71,10 +72,10 @@
  *  @return integer sampling id
  */
 - (NSInteger)getEventLogSamplingID {
-    NSNumber* samplingId = [[NSUserDefaults standardUserDefaults] objectForKey:@"EventLogSamplingID"];
+    NSNumber* samplingId = [[NSUserDefaults wmf_userDefaults] objectForKey:@"EventLogSamplingID"];
     if (!samplingId) {
         NSInteger intId = arc4random_uniform(UINT32_MAX);
-        [[NSUserDefaults standardUserDefaults] setInteger:intId forKey:@"EventLogSamplingID"];
+        [[NSUserDefaults wmf_userDefaults] setInteger:intId forKey:@"EventLogSamplingID"];
         return intId;
     } else {
         return samplingId.integerValue;

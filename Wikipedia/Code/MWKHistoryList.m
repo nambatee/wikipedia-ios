@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Legacy Migration
 
 - (void)migrateLegacyDataIfNeeded {
-    if ([[NSUserDefaults standardUserDefaults] wmf_didMigrateHistoryList]) {
+    if ([[NSUserDefaults wmf_userDefaults] wmf_didMigrateHistoryList]) {
         return;
     }
 
@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
             return urls;
         }];
 
-        [[NSUserDefaults standardUserDefaults] wmf_setDidMigrateHistoryList:YES];
+        [[NSUserDefaults wmf_userDefaults] wmf_setDidMigrateHistoryList:YES];
     }
 }
 

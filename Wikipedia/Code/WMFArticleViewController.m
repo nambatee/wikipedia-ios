@@ -780,7 +780,7 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
 
     [self updateTableOfContentsDisplayModeWithTraitCollection:self.traitCollection];
     
-    BOOL isVisibleInline = [[NSUserDefaults standardUserDefaults] wmf_isTableOfContentsVisibleInline];
+    BOOL isVisibleInline = [[NSUserDefaults wmf_userDefaults] wmf_isTableOfContentsVisibleInline];
     
     self.tableOfContentsDisplayState = self.tableOfContentsDisplayMode == WMFTableOfContentsDisplayModeInline ? isVisibleInline ? WMFTableOfContentsDisplayStateInlineVisible : WMFTableOfContentsDisplayStateInlineHidden : WMFTableOfContentsDisplayStateModalHidden;
     
@@ -951,7 +951,7 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
         case WMFTableOfContentsDisplayModeInline:
         {
             if (sender != self) {
-                [[NSUserDefaults standardUserDefaults] wmf_setTableOfContentsIsVisibleInline:YES];
+                [[NSUserDefaults wmf_userDefaults] wmf_setTableOfContentsIsVisibleInline:YES];
             }
             self.tableOfContentsDisplayState = WMFTableOfContentsDisplayStateInlineVisible;
             [UIView animateWithDuration:0.25 animations:^{
@@ -975,7 +975,7 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
         case WMFTableOfContentsDisplayModeInline:
         {
             if (sender != self) {
-                [[NSUserDefaults standardUserDefaults] wmf_setTableOfContentsIsVisibleInline:NO];
+                [[NSUserDefaults wmf_userDefaults] wmf_setTableOfContentsIsVisibleInline:NO];
             }
             self.tableOfContentsDisplayState = WMFTableOfContentsDisplayStateInlineHidden;
             [UIView animateWithDuration:0.25 animations:^{
@@ -1306,7 +1306,7 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
 }
 
 - (NSUInteger)indexOfCurrentFontSize {
-    NSNumber* fontSize = [[NSUserDefaults standardUserDefaults] wmf_readingFontSize];
+    NSNumber* fontSize = [[NSUserDefaults wmf_userDefaults] wmf_readingFontSize];
 
     NSUInteger index = [[self fontSizeMultipliers] indexOfObject:fontSize];
 

@@ -77,9 +77,9 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     if ([[MWKLanguageLinkController sharedInstance].preferredLanguages count] > 1) {
-        [[NSUserDefaults standardUserDefaults] wmf_setShowSearchLanguageBar:YES];
+        [[NSUserDefaults wmf_userDefaults] wmf_setShowSearchLanguageBar:YES];
     } else {
-        [[NSUserDefaults standardUserDefaults] wmf_setShowSearchLanguageBar:NO];
+        [[NSUserDefaults wmf_userDefaults] wmf_setShowSearchLanguageBar:NO];
     }
 }
 
@@ -140,7 +140,7 @@
 - (void)useFirstPreferredLanguageAsSearchLanguage {
     MWKLanguageLink* firstPreferredLanguage = [[MWKLanguageLinkController sharedInstance] appLanguage];
 
-    [[NSUserDefaults standardUserDefaults] wmf_setCurrentSearchLanguageDomain:firstPreferredLanguage.siteURL];
+    [[NSUserDefaults wmf_userDefaults] wmf_setCurrentSearchLanguageDomain:firstPreferredLanguage.siteURL];
 }
 
 - (IBAction)addLanguages:(id)sender {

@@ -30,7 +30,7 @@ NSString* const WMFIconShortcutTypeNearby          = @"org.wikimedia.wikipedia.i
 }
 
 + (nullable UIApplicationShortcutItem*)wmf_continueReading {
-    NSURL* lastRead = [[NSUserDefaults standardUserDefaults] wmf_openArticleURL];
+    NSURL* lastRead = [[NSUserDefaults wmf_userDefaults] wmf_openArticleURL];
     if (lastRead.wmf_title.length == 0) {
         return nil;
     }
