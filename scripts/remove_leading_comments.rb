@@ -10,7 +10,7 @@ def iterate_and_remove(dir)
       new_file = ''
       skip = true
       File.foreach(full_path) do |line|
-        if skip && (/^\/\/*+/.match(line) || line.strip.length == 0)
+        if skip && (/^\/\//.match(line) || line.strip.length == 0)
           
         else
           skip = false
@@ -27,7 +27,7 @@ def iterate_and_remove(dir)
   end
 end
 
-dirs = ['Wikipedia/Code', 'WikipediaUnitTests/Code']
+dirs = ['Wikipedia/Code', 'WikipediaUnitTests/Code', 'WMFKit']
 
 dirs.each do |dir|
   iterate_and_remove(dir)
