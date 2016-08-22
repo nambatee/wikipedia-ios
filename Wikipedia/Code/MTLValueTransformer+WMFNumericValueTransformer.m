@@ -1,5 +1,6 @@
 #import "MTLValueTransformer+WMFNumericValueTransformer.h"
 #import <Mantle/NSValueTransformer+MTLPredefinedTransformerAdditions.h>
+#import "WMFOutParamUtils.h"
 
 static NSString *const WMFNumericTransformerErrorDomain = @"WMFNumericTransformerErrorDomain";
 

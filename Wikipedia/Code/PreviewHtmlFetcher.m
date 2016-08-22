@@ -4,6 +4,7 @@
 #import "SessionSingleton.h"
 #import "NSObject+WMFExtras.h"
 #import "MediaWikiKit.h"
+#import "NSURL+WMFLinkParsing.h"
 
 @implementation PreviewHtmlFetcher
 

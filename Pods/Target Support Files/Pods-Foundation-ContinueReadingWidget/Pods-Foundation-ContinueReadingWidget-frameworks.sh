@@ -86,7 +86,7 @@ strip_invalid_archs() {
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/AFNetworking/AFNetworking.framework"
   install_framework "$BUILT_PRODUCTS_DIR/AnimatedGIFImageSerialization/AnimatedGIFImageSerialization.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/BlocksKit/BlocksKit.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/BlocksKit-Core/BlocksKit.framework"
   install_framework "$BUILT_PRODUCTS_DIR/CocoaLumberjack/CocoaLumberjack.framework"
   install_framework "$BUILT_PRODUCTS_DIR/KVOController/KVOController.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Mantle/Mantle.framework"
@@ -98,14 +98,13 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/Reachability/Reachability.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SDWebImage/SDWebImage.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SSDataSources/SSDataSources.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/Tweaks/Tweaks.framework"
   install_framework "$BUILT_PRODUCTS_DIR/YapDatabase/YapDatabase.framework"
   install_framework "$BUILT_PRODUCTS_DIR/libextobjc/libextobjc.framework"
 fi
 if [[ "$CONFIGURATION" == "Debug Test" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/AFNetworking/AFNetworking.framework"
   install_framework "$BUILT_PRODUCTS_DIR/AnimatedGIFImageSerialization/AnimatedGIFImageSerialization.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/BlocksKit/BlocksKit.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/BlocksKit-Core/BlocksKit.framework"
   install_framework "$BUILT_PRODUCTS_DIR/CocoaLumberjack/CocoaLumberjack.framework"
   install_framework "$BUILT_PRODUCTS_DIR/KVOController/KVOController.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Mantle/Mantle.framework"
@@ -117,14 +116,13 @@ if [[ "$CONFIGURATION" == "Debug Test" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/Reachability/Reachability.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SDWebImage/SDWebImage.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SSDataSources/SSDataSources.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/Tweaks/Tweaks.framework"
   install_framework "$BUILT_PRODUCTS_DIR/YapDatabase/YapDatabase.framework"
   install_framework "$BUILT_PRODUCTS_DIR/libextobjc/libextobjc.framework"
 fi
 if [[ "$CONFIGURATION" == "AdHoc" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/AFNetworking/AFNetworking.framework"
   install_framework "$BUILT_PRODUCTS_DIR/AnimatedGIFImageSerialization/AnimatedGIFImageSerialization.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/BlocksKit/BlocksKit.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/BlocksKit-Core/BlocksKit.framework"
   install_framework "$BUILT_PRODUCTS_DIR/CocoaLumberjack/CocoaLumberjack.framework"
   install_framework "$BUILT_PRODUCTS_DIR/KVOController/KVOController.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Mantle/Mantle.framework"
@@ -136,14 +134,13 @@ if [[ "$CONFIGURATION" == "AdHoc" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/Reachability/Reachability.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SDWebImage/SDWebImage.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SSDataSources/SSDataSources.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/Tweaks/Tweaks.framework"
   install_framework "$BUILT_PRODUCTS_DIR/YapDatabase/YapDatabase.framework"
   install_framework "$BUILT_PRODUCTS_DIR/libextobjc/libextobjc.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/AFNetworking/AFNetworking.framework"
   install_framework "$BUILT_PRODUCTS_DIR/AnimatedGIFImageSerialization/AnimatedGIFImageSerialization.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/BlocksKit/BlocksKit.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/BlocksKit-Core/BlocksKit.framework"
   install_framework "$BUILT_PRODUCTS_DIR/CocoaLumberjack/CocoaLumberjack.framework"
   install_framework "$BUILT_PRODUCTS_DIR/KVOController/KVOController.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Mantle/Mantle.framework"
@@ -155,14 +152,13 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/Reachability/Reachability.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SDWebImage/SDWebImage.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SSDataSources/SSDataSources.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/Tweaks/Tweaks.framework"
   install_framework "$BUILT_PRODUCTS_DIR/YapDatabase/YapDatabase.framework"
   install_framework "$BUILT_PRODUCTS_DIR/libextobjc/libextobjc.framework"
 fi
 if [[ "$CONFIGURATION" == "Test" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/AFNetworking/AFNetworking.framework"
   install_framework "$BUILT_PRODUCTS_DIR/AnimatedGIFImageSerialization/AnimatedGIFImageSerialization.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/BlocksKit/BlocksKit.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/BlocksKit-Core/BlocksKit.framework"
   install_framework "$BUILT_PRODUCTS_DIR/CocoaLumberjack/CocoaLumberjack.framework"
   install_framework "$BUILT_PRODUCTS_DIR/KVOController/KVOController.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Mantle/Mantle.framework"
@@ -174,14 +170,13 @@ if [[ "$CONFIGURATION" == "Test" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/Reachability/Reachability.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SDWebImage/SDWebImage.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SSDataSources/SSDataSources.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/Tweaks/Tweaks.framework"
   install_framework "$BUILT_PRODUCTS_DIR/YapDatabase/YapDatabase.framework"
   install_framework "$BUILT_PRODUCTS_DIR/libextobjc/libextobjc.framework"
 fi
 if [[ "$CONFIGURATION" == "Beta" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/AFNetworking/AFNetworking.framework"
   install_framework "$BUILT_PRODUCTS_DIR/AnimatedGIFImageSerialization/AnimatedGIFImageSerialization.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/BlocksKit/BlocksKit.framework"
+  install_framework "$BUILT_PRODUCTS_DIR/BlocksKit-Core/BlocksKit.framework"
   install_framework "$BUILT_PRODUCTS_DIR/CocoaLumberjack/CocoaLumberjack.framework"
   install_framework "$BUILT_PRODUCTS_DIR/KVOController/KVOController.framework"
   install_framework "$BUILT_PRODUCTS_DIR/Mantle/Mantle.framework"
@@ -193,7 +188,6 @@ if [[ "$CONFIGURATION" == "Beta" ]]; then
   install_framework "$BUILT_PRODUCTS_DIR/Reachability/Reachability.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SDWebImage/SDWebImage.framework"
   install_framework "$BUILT_PRODUCTS_DIR/SSDataSources/SSDataSources.framework"
-  install_framework "$BUILT_PRODUCTS_DIR/Tweaks/Tweaks.framework"
   install_framework "$BUILT_PRODUCTS_DIR/YapDatabase/YapDatabase.framework"
   install_framework "$BUILT_PRODUCTS_DIR/libextobjc/libextobjc.framework"
 fi

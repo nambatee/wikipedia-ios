@@ -1,5 +1,5 @@
 @import Foundation;
-
+@import PromiseKit;
 @class MWKSiteInfo;
 
 NS_ASSUME_NONNULL_BEGIN

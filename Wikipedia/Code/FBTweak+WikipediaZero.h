@@ -1,4 +1,4 @@
-#import <Tweaks/FBTweak.h>
+#import <Tweaks/FBTweakInline.h>
 
 @interface FBTweak (WikipediaZero)
 

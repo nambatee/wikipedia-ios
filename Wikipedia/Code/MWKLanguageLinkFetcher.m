@@ -9,6 +9,7 @@
 #import "MediaWikiKit.h"
 #import "NSURL+WMFLinkParsing.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
+#import "WMFGCDHelpers.h"
 
 @interface MWKLanguageLinkFetcher ()
 

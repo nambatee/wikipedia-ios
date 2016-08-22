@@ -3,7 +3,9 @@
 #import "FBTweak+WikipediaZero.h"
 #import "MWKArticle.h"
 #import "MWKImage.h"
-#import "Wikipedia-Swift.h"
+#import <WMFKit/WMFKit-Swift.h>
+#import "NSURL+WMFLinkParsing.h"
+#import "NSURL+WMFExtras.h"
 
 static NSString *const WMFURLCacheWikipediaHost = @".m.wikipedia.org";
 static NSString *const WMFURLCacheJsonMIMEType = @"application/json";

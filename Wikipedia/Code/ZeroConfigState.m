@@ -6,7 +6,10 @@
 #import "WMFZeroMessage.h"
 #import "WMFZeroMessageFetcher.h"
 #import "MWKLanguageLinkController.h"
-@import PromiseKit;
+#import <PromiseKit/PromiseKit.h>
+#import "WMFLocalization.h"
+#import "MWKLanguageLinkController.h"
+#import "MWKLanguageLink.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -2,8 +2,9 @@
 #import "NSDate+WMFPOTDTitle.h"
 #import "MWKImageInfo.h"
 #import "NSDateFormatter+WMFExtensions.h"
-@import PromiseKit;
+#import <PromiseKit/PromiseKit.h>
 #import "WMFLocalization.h"
+#import "NSURL+WMFLinkParsing.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

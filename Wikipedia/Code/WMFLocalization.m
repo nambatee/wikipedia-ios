@@ -1,4 +1,5 @@
 #import "WMFLocalization.h"
+#import "NSURL+WMFLinkParsing.h"
 
 NSString *localizedStringForKeyFallingBackOnEnglish(NSString *key) {
     NSString *outStr = NSLocalizedString(key, nil);

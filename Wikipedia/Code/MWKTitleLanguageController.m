@@ -4,6 +4,7 @@
 #import "MWKLanguageLinkFetcher.h"
 #import "QueuesSingleton.h"
 #import "AFHTTPSessionManager+WMFCancelAll.h"
+@import BlocksKit;
 
 NS_ASSUME_NONNULL_BEGIN
 

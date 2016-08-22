@@ -44,10 +44,7 @@ abstract_target 'Foundation' do
   pod 'HockeySDK', '~> 3.8.2'
   
   pod 'CocoaLumberjack/Swift'
-  
-  pod 'Tweaks'
-  pod 'BlocksKit/UIKit', '~> 2.2.0'
-  
+   
 
   target 'ContinueReadingWidget' do
 
@@ -59,7 +56,9 @@ abstract_target 'Foundation' do
   
   target 'Wikipedia' do
     # Utilities
-
+    pod 'BlocksKit/UIKit', '~> 2.2.0'
+    pod 'Tweaks'
+	
     # HTML
     pod 'GCDWebServer', '~> 3.3'
 

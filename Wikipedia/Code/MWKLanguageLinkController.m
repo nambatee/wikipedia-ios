@@ -7,8 +7,7 @@
 #import "WMFAssetsFile.h"
 #import "WikipediaAppUtils.h"
 #import <BlocksKit/BlocksKit.h>
-#import "Wikipedia-Swift.h"
-@import WMFKit;
+#import <WMFKit/WMFKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

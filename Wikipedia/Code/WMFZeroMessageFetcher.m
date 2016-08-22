@@ -5,6 +5,8 @@
 #import "WikipediaAppUtils.h"
 #import "FBTweak+WikipediaZero.h"
 #import "AFHTTPSessionManager+WMFCancelAll.h"
+#import <PromiseKit/PromiseKit.h>
+#import "NSURL+WMFLinkParsing.h"
 
 @interface WMFZeroMessageFetcher ()
 

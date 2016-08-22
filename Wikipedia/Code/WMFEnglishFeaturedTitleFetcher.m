@@ -1,6 +1,5 @@
 #import "WMFEnglishFeaturedTitleFetcher.h"
-#import "Wikipedia-Swift.h"
-
+#import <WMFKit/WMFKit-Swift.h>
 #import "AFHTTPSessionManager+WMFDesktopRetry.h"
 #import "AFHTTPSessionManager+WMFConfig.h"
 #import "WMFApiJsonResponseSerializer.h"
@@ -9,6 +8,12 @@
 #import "MWKSearchResult.h"
 #import "NSDictionary+WMFCommonParams.h"
 #import "WMFBaseRequestSerializer.h"
+#import <libextobjc/EXTScope.h>
+#import "NSURL+WMFLinkParsing.h"
+#import <PromiseKit/PromiseKit.h>
+#import "NSString+WMFExtras.h"
+#import "WMFLogging.h"
+#import "NSError+WMFExtensions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

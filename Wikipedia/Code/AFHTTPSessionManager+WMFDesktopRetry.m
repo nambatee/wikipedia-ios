@@ -3,7 +3,7 @@
 #import "SessionSingleton.h"
 #import "NSURL+WMFLinkParsing.h"
 @import Foundation;
-@import PromiseKit;
+#import <PromiseKit/PromiseKit.h>
 
 @implementation AFHTTPSessionManager (WMFDesktopRetry)
 

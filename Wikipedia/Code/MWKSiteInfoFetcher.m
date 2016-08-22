@@ -5,6 +5,7 @@
 #import "WMFNetworkUtilities.h"
 #import "WMFApiJsonResponseSerializer.h"
 #import "MWKSiteInfo.h"
+#import <PromiseKit/PromiseKit.h>
 
 @interface MWKSiteInfoFetcher ()
 @property (nonatomic, strong) AFHTTPSessionManager *operationManager;

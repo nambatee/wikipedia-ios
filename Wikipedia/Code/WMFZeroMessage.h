@@ -1,4 +1,5 @@
 #import <Mantle/Mantle.h>
+#import <UIKit/UIKit.h>
 
 @interface WMFZeroMessage : MTLModel <MTLJSONSerializing>
 
