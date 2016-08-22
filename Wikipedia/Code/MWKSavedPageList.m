@@ -3,8 +3,9 @@
 #import <YapDataBase/YapDatabase.h>
 #import <YapDataBase/YapDatabaseView.h>
 #import "MWKHistoryEntry+WMFDatabaseStorable.h"
-@import WMFKit;
-#import "Wikipedia-Swift.h"
+#import "NSURL+WMFLinkParsing.h"
+#import <WMFKit/WMFKit-Swift.h>
+#import "NSArray+WMFMapping.h"
 
 //Legacy
 #import "MWKSavedPageListDataExportConstants.h"

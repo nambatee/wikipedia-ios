@@ -1,13 +1,12 @@
 #import "ZeroConfigState.h"
-#import "Wikipedia-Swift.h"
-#import <BlocksKit/UIAlertView+BlocksKit.h>
+@import BlocksKit;
+#import <libextobjc/EXTScope.h>
 #import <Tweaks/FBTweakInline.h>
-
+#import <WMFKit/WMFKit-Swift.h>
 #import "WMFZeroMessage.h"
 #import "WMFZeroMessageFetcher.h"
 #import "MWKLanguageLinkController.h"
-
-@import WMFKit;
+@import PromiseKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -106,7 +105,6 @@ NSString *const ZeroWarnWhenLeaving = @"ZeroWarnWhenLeaving";
 
 - (AnyPromise *)fetchZeroMessage {
     [self.zeroMessageFetcher cancelAllFetches];
-    WMF_TECH_DEBT_TODO(fall back to default zero warning on fetch error);
     return [self.zeroMessageFetcher fetchZeroMessageForSiteURL:[[[MWKLanguageLinkController sharedInstance] appLanguage] siteURL]];
 }
 

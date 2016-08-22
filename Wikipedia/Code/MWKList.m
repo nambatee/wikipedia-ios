@@ -1,5 +1,9 @@
 #import "MWKList+Subclass.h"
-#import "Wikipedia-Swift.h"
+#import "WMFComparison.h"
+#import <BlocksKit/BlocksKit.h>
+#import <PromiseKit/PromiseKit.h>
+#import "WMFGCDHelpers.h"
+#import "NSError+WMFExtensions.h"
 
 @interface MWKList ()
 

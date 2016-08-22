@@ -1,6 +1,7 @@
 #import "MWKLanguageLinkResponseSerializer.h"
 #import "MWKLanguageLink.h"
 #import <BlocksKit/BlocksKit.h>
+#import "WMFComparison.h"
 
 @implementation MWKLanguageLinkResponseSerializer
 

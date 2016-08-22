@@ -2,6 +2,7 @@
 #import "NSString+WMFExtras.h"
 #import "WikiGlyph_Chars.h"
 #import "NSDate+Utilities.h"
+#import "WMFComparison.h"
 
 @implementation WMFPageHistoryRevision
 

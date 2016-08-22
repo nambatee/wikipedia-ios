@@ -1,4 +1,5 @@
 #import "WMFTaskGroup.h"
+#import "WMFLogging.h"
 
 @interface WMFTaskGroup ()
 

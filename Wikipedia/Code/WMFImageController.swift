@@ -1,5 +1,6 @@
 import Foundation
 import SDWebImage
+import PromiseKit
 
 ///
 /// @name Constants

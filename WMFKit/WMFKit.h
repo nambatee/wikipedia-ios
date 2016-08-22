@@ -1,4 +1,4 @@
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 //! Project version number for WMFKit.
 FOUNDATION_EXPORT double WMFKitVersionNumber;
@@ -6,7 +6,45 @@ FOUNDATION_EXPORT double WMFKitVersionNumber;
 //! Project version string for WMFKit.
 FOUNDATION_EXPORT const unsigned char WMFKitVersionString[];
 
+#import "WMFLogging.h"
 #import "NSURL+WMFLinkParsing.h"
 #import "NSURLComponents+WMFLinkParsing.h"
+#import "MWKArticle.h"
+#import "MWKSection.h"
 #import "MWKSite.h"
 #import "MWKTitle.h"
+#import "MWKDataObject.h"
+#import "MWKDataStore+WMFDataSources.h"
+#import "MWKDataStore.h"
+#import "MWKDataStoreList.h"
+#import "MWKHistoryEntry+WMFDatabaseStorable.h"
+#import "MWKLicense+ToGlyph.h"
+#import "MWKList+Subclass.h"
+#import "MWKList.h"
+#import "MWKSavedPageEntry+ImageMigration.h"
+#import "MWKSavedPageEntry.h"
+#import "MWKSavedPageList.h"
+#import "MWKSavedPageListDataExportConstants.h"
+#import "WMFGCDHelpers.h"
+#import "WMFBlockDefinitions.h"
+#import "WMFPageHistoryRevision.h"
+#import "NSArray+BKIndex.h"
+#import "NSArray+WMFMapping.h"
+#import "NSIndexSet+BKReduce.h"
+#import "NSMutableArray+WMFSafeAdd.h"
+#import "NSMutableSet+WMFSafeAdd.h"
+#import "NSMutableDictionary+WMFMaybeSet.h"
+#import "NSDictionary+WMFExtensions.h"
+#import "WMFRangeUtils.h"
+#import "NSURL+WMFExtras.h"
+#import "NSError+WMFExtensions.h"
+#import "WMFDeprecationMacros.h"
+#import "SDImageCache+WMFPersistentCache.h"
+#import "NSFileManager+WMFExtendedFileAttributes.h"
+#import "SDWebImageManager+WMFCacheRemoval.h"
+#import "WMFComparison.h"
+#import "WMFTaskGroup.h"
+#import "AFHTTPSessionManager+WMFConfig.h"
+#import "WMFApiJsonResponseSerializer.h"
+#import "NSDateFormatter+WMFExtensions.h"
+#import "WMFLocalization.h"

@@ -1,4 +1,5 @@
 #import "NSURL+WMFQueryParameters.h"
+#import <BlocksKit/BlocksKit.h>
 
 @implementation NSURL (WMFQueryParameters)
 

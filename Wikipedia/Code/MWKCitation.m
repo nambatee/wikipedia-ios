@@ -1,5 +1,9 @@
 #import "MWKCitation.h"
-#import <hpple/TFHpple.h>
+#import "WMFComparison.h"
+#import "WMFLogging.h"
+@import hpple;
+@import CocoaLumberjack;
+@import BlocksKit;
 
 NS_ASSUME_NONNULL_BEGIN
 

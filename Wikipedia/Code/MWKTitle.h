@@ -1,4 +1,3 @@
-#import <Mantle/MTLModel.h>
 #import "MWKSite.h"
 
 NS_ASSUME_NONNULL_BEGIN

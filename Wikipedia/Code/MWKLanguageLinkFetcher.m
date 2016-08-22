@@ -7,7 +7,7 @@
 #import "WMFNetworkUtilities.h"
 #import "MWKLanguageLinkResponseSerializer.h"
 #import "MediaWikiKit.h"
-
+#import "NSURL+WMFLinkParsing.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
 
 @interface MWKLanguageLinkFetcher ()

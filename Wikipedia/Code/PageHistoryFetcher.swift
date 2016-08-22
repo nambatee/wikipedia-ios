@@ -1,6 +1,7 @@
 import Foundation
 import AFNetworking
 import Mantle
+import PromiseKit
 
 public class PageHistoryFetcher: NSObject {
     private let operationManager: AFHTTPSessionManager = {

@@ -1,5 +1,5 @@
 #import "FetcherBase.h"
-
+@import PromiseKit;
 @class MWKArticle;
 @class NSURLSessionDataTask;
 @class AFHTTPSessionManager;

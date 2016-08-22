@@ -1,5 +1,6 @@
 #import "MWKSectionMetaData.h"
 #import "MTLValueTransformer+WMFNumericValueTransformer.h"
+#import <BlocksKit/BlocksKit.h>
 
 @implementation MWKSectionMetaData
 

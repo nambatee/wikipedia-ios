@@ -1,6 +1,7 @@
-#import <Foundation/Foundation.h>
+@import Foundation;
+@class MWKArticle;
 
-WMF_TECH_DEBT_DEPRECATED
+//WMF_TECH_DEBT_DEPRECATED
 @interface MWLanguageInfo : NSObject
 
 @property (copy) NSString *code;

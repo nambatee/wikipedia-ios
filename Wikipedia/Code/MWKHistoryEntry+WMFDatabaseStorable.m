@@ -1,4 +1,5 @@
 #import "MWKHistoryEntry+WMFDatabaseStorable.h"
+#import "NSURL+WMFLinkParsing.h"
 
 @implementation MWKHistoryEntry (WMFDatabaseStorable)
 

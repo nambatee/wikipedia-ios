@@ -1,4 +1,7 @@
 #import "MediaWikiKit.h"
+#import "NSURL+WMFLinkParsing.h"
+#import "WMFComparison.h"
+#import "WMFHashing.h"
 
 @interface MWKRecentSearchEntry ()
 

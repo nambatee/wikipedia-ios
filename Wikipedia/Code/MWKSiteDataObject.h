@@ -1,5 +1,4 @@
 #import "MWKDataObject.h"
-
 @class MWKUser;
 
 @interface MWKSiteDataObject : MWKDataObject

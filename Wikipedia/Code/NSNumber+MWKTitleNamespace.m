@@ -1,4 +1,5 @@
 #import "NSNumber+MWKTitleNamespace.h"
+#import "WMFLogging.h"
 
 @implementation NSNumber (MWKTitleNamespace)
 

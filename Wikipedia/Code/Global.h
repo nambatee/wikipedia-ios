@@ -11,7 +11,6 @@
 #import "WMFGCDHelpers.h"
 #import "WMFLocalization.h"
 #import "WMFMath.h"
-#import "NSError+WMFExtensions.h"
 #import "NSObjectUtilities.h"
 #import "WMFOutParamUtils.h"
 #import "UIColor+WMFStyle.h"
@@ -23,16 +22,7 @@
 // Need to import it this way since umbrella header doesn't have AnyPromise declarations
 #import <PromiseKit/PromiseKit.h>
 
-#import "WMFBlockDefinitions.h"
-#import "WMFComparison.h"
-#import "WMFDeprecationMacros.h"
-#import "NSProcessInfo+WMFOperatingSystemVersionChecks.h"
-#import "NSArray+WMFMapping.h"
-#import "NSMutableArray+WMFSafeAdd.h"
-#import "NSMutableSet+WMFSafeAdd.h"
-#import "NSDictionary+WMFExtensions.h"
-#import "NSURL+WMFExtras.h"
-#import "NSURL+WMFLinkParsing.h"
+@import WMFKit;
 
 #define URL_PRIVACY_POLICY @"https://m.wikimediafoundation.org/wiki/Privacy_policy"
 

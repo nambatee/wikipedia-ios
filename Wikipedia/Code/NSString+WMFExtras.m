@@ -7,6 +7,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "MediaWikiKit.h"
 #import "NSString+WMFHTMLParsing.h"
+#import "NSURL+WMFLinkParsing.h"
 
 @implementation NSString (WMFExtras)
 

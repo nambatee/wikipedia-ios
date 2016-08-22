@@ -12,6 +12,10 @@
 #import "WMFImageTagParser.h"
 #import "WMFImageTagList.h"
 #import "WMFImageTagList+ImageURLs.h"
+#import "NSURL+WMFLinkParsing.h"
+#import "WMFLogging.h"
+#import "NSArray+WMFMapping.h"
+#import "NSURL+WMFExtras.h"
 
 @import CoreText;
 
@@ -421,10 +425,14 @@ static MWKArticleSchemaVersion const MWKArticleCurrentSchemaVersion = MWKArticle
     [imageURLs addObjectsFromArray:[self schemelessURLsRejectingNilURLs:thumbURLs]];
 
     NSURL *articleImageURL = [NSURL wmf_optionalURLWithString:self.imageURL];
-    [imageURLs wmf_safeAddObject:articleImageURL];
+    if (articleImageURL) {
+        [imageURLs addObject:articleImageURL];
+    }
 
     NSURL *articleThumbnailURL = [NSURL wmf_optionalURLWithString:self.thumbnailURL];
-    [imageURLs wmf_safeAddObject:articleThumbnailURL];
+    if (articleImageURL) {
+        [imageURLs addObject:articleImageURL];
+    }
 
 #if DEBUG
     for (NSURL *url in imageURLs) {

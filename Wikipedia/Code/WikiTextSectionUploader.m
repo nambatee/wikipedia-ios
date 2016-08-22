@@ -5,6 +5,7 @@
 #import "NSObject+WMFExtras.h"
 #import "WikipediaAppUtils.h"
 #import "MediaWikiKit.h"
+#import "NSURL+WMFLinkParsing.h"
 
 @interface WikiTextSectionUploader ()
 

@@ -2,6 +2,7 @@
 #import "WMFImageTag+TargetImageWidthURL.h"
 #import "WMFImageTag.h"
 #import "UIScreen+WMFImageWidth.h"
+@import BlocksKit;
 
 @implementation WMFImageTagList (ImageURLs)
 

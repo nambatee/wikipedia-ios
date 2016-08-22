@@ -1,6 +1,8 @@
 #ifndef Wikipedia_WMFBlockDefinitions_h
 #define Wikipedia_WMFBlockDefinitions_h
 
+#import <UIKit/UIKit.h>
+
 @class MWKArticle;
 @class MWKSearchResult;
 

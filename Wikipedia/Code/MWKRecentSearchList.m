@@ -1,6 +1,8 @@
 #import "MWKRecentSearchList.h"
 #import "MWKList+Subclass.h"
 #import "MediaWikiKit.h"
+#import "NSArray+WMFMapping.h"
+@import BlocksKit;
 
 @interface MWKRecentSearchList ()
 

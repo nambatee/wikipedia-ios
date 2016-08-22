@@ -1,4 +1,5 @@
 #import "NSDictionary+WMFExtensions.h"
+#import <BlocksKit/BlocksKit.h>
 
 @implementation NSDictionary (WMFExtensions)
 

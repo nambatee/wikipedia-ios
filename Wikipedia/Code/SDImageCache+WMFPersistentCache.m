@@ -1,4 +1,5 @@
 #import "SDImageCache+WMFPersistentCache.h"
+#import "WMFLogging.h"
 
 @implementation SDImageCache (WMFPersistentCache)
 

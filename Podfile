@@ -42,22 +42,25 @@ abstract_target 'Foundation' do
   # Diagnostics
   pod 'PiwikTracker'
   pod 'HockeySDK', '~> 3.8.2'
+  
+  pod 'CocoaLumberjack/Swift'
+  
+  pod 'Tweaks'
+  pod 'BlocksKit/UIKit', '~> 2.2.0'
+  
 
   target 'ContinueReadingWidget' do
 
   end
   
   target 'WMFKit' do
-  	
+    pod 'hpple', '~> 0.2'
   end
   
   target 'Wikipedia' do
     # Utilities
-    pod 'Tweaks'
-    pod 'BlocksKit/UIKit', '~> 2.2.0'
 
     # HTML
-    pod 'hpple', '~> 0.2'
     pod 'GCDWebServer', '~> 3.3'
 
     # Views

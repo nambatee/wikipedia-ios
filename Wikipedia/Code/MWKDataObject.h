@@ -1,5 +1,5 @@
-#import <Foundation/Foundation.h>
-#import <Mantle/Mantle.h>
+@import Foundation;
+@import Mantle;
 
 @interface MWKDataObject : MTLModel
 

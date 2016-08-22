@@ -2,6 +2,8 @@
 #import "NSDate+WMFPOTDTitle.h"
 #import "MWKImageInfo.h"
 #import "NSDateFormatter+WMFExtensions.h"
+@import PromiseKit;
+#import "WMFLocalization.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

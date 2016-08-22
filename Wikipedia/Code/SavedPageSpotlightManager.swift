@@ -1,7 +1,7 @@
 import UIKit
 import MobileCoreServices
 import CoreSpotlight
-
+import WMFKit
 
 public extension NSURL {
     @available(iOS 9.0, *)

@@ -1,6 +1,7 @@
 #import "WMFMantleJSONResponseSerializer.h"
 #import <Mantle/Mantle.h>
 #import "NSError+WMFExtensions.h"
+#import "WMFLogging.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

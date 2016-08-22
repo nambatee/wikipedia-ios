@@ -57,7 +57,7 @@ static NSString *const WMFMostReadFailingProjectUserInfoKey = @"WMFMostReadFaili
 }
 
 - (BOOL)isArticleTitleMainPage:(WMFMostReadTitlesResponseItemArticle *)article {
-    WMF_TECH_DEBT_TODO(reset data on memory warning);
+    //WMF_TECH_DEBT_TODO(reset data on memory warning);
     static dispatch_once_t onceToken;
     static NSDictionary *mainPages;
     dispatch_once(&onceToken, ^{

@@ -1,4 +1,5 @@
 #import "NSDictionary+WMFRequiredValueForKey.h"
+#import "WMFLogging.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

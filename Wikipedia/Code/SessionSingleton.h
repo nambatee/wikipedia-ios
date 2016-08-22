@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "MWKHistoryEntry.h"
 #import "ZeroConfigState.h"
+#import "WMFDeprecationMacros.h"
 
 @class MWKDataStore;
 @class MWKUserDataStore;

@@ -5,6 +5,8 @@
 #import "NSObject+WMFExtras.h"
 #import "WikipediaAppUtils.h"
 #import "MediaWikiKit.h"
+#import "NSURL+WMFLinkParsing.h"
+#import "WMFLocalization.m"
 
 @interface WikiTextSectionFetcher ()
 

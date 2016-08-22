@@ -89,7 +89,7 @@
 }
 
 - (void)nearbyController:(WMFLocationManager *)controller didReceiveError:(NSError *)error {
-    WMF_TECH_DEBT_TODO(implement compass error handling);
+    // WMF_TECH_DEBT_TODO(implement compass error handling);
     //    if ([WMFLocationManager isDeniedOrDisabled]) {
     //        //TODO: anything we need to handle?
     //    }

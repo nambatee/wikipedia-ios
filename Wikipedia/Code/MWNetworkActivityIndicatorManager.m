@@ -1,4 +1,5 @@
 #import "MWNetworkActivityIndicatorManager.h"
+@import UIKit;
 
 // Private
 @interface MWNetworkActivityIndicatorManager ()

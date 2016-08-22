@@ -1,4 +1,4 @@
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 @class MWKHistoryEntry, MWKDataStore;
 
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return The task. The result is the MWKHistoryEntry.
  */
-- (void)setPageScrollPosition:(CGFloat)scrollposition onPageInHistoryWithURL:(NSURL *)url;
+- (void)setPageScrollPosition:(double)scrollposition onPageInHistoryWithURL:(NSURL *)url;
 
 /**
  *  Sets the history entry to be "significantly viewed"

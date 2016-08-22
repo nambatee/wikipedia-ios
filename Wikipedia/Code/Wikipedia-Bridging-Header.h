@@ -26,6 +26,7 @@
 #import "NSDateFormatter+WMFExtensions.h"
 #import "NSFileManager+WMFExtendedFileAttributes.h"
 #import "WMFTaskGroup.h"
+#import "NSProcessInfo+WMFOperatingSystemVersionChecks.h"
 
 // View Controllers
 #import "WMFArticleViewController_Private.h"

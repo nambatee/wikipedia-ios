@@ -1,6 +1,7 @@
 #import "MediaWikiKit.h"
 #import "WikipediaAppUtils.h"
 #import "NSMutableDictionary+WMFMaybeSet.h"
+#import "NSURL+WMFLinkParsing.h"
 
 @interface MWKHistoryEntry ()
 

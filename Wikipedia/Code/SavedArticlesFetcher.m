@@ -216,7 +216,7 @@ static SavedArticlesFetcher *_articleFetcher = nil;
 
 - (void)downloadImageDataForArticle:(MWKArticle *)article failure:(WMFErrorHandler)failure success:(WMFSuccessHandler)success {
     if (![[NSUserDefaults wmf_userDefaults] wmf_didFinishLegacySavedArticleImageMigration]) {
-        WMF_TECH_DEBT_TODO(This legacy migration can be removed after enough users upgrade to 5.0 .5)
+        //WMF_TECH_DEBT_TODO(This legacy migration can be removed after enough users upgrade to 5.0 .5)
             [self migrateLegacyImagesInArticle:article];
     }
     [self fetchAllImagesInArticle:article
@@ -268,7 +268,7 @@ static SavedArticlesFetcher *_articleFetcher = nil;
 
 - (void)fetchAllImagesInArticle:(MWKArticle *)article failure:(WMFErrorHandler)failure success:(WMFSuccessHandler)success {
     if (![[NSUserDefaults wmf_userDefaults] wmf_didFinishLegacySavedArticleImageMigration]) {
-        WMF_TECH_DEBT_TODO(This legacy migration can be removed after enough users upgrade to 5.0 .5)
+        //WMF_TECH_DEBT_TODO(This legacy migration can be removed after enough users upgrade to 5.0 .5)
             [self migrateLegacyImagesInArticle:article];
     }
 
@@ -280,7 +280,7 @@ static SavedArticlesFetcher *_articleFetcher = nil;
 }
 
 - (void)fetchGalleryDataForArticle:(MWKArticle *)article failure:(WMFErrorHandler)failure success:(WMFSuccessHandler)success {
-    WMF_TECH_DEBT_TODO(check whether on - disk image info matches what we are about to fetch)
+    //WMF_TECH_DEBT_TODO(check whether on - disk image info matches what we are about to fetch)
     @weakify(self);
 
     [self fetchImageInfoForImagesInArticle:article

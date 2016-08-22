@@ -5,6 +5,9 @@
 #import "WikipediaAppUtils.h"
 #import "NSString+WMFExtras.h"
 #import <BlocksKit/BlocksKit.h>
+#import "NSURL+WMFLinkParsing.h"
+#import "WMFLogging.h"
+#import "NSArray+WMFMapping.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -4,8 +4,9 @@
 #import <YapDataBase/YapDatabaseView.h>
 #import "MWKHistoryEntry+WMFDatabaseStorable.h"
 #import "NSDateFormatter+WMFExtensions.h"
-#import "Wikipedia-Swift.h"
-@import WMFKit;
+#import <WMFKit/WMFKit-Swift.h>
+#import "NSArray+WMFMapping.h"
+#import "NSURL+WMFLinkParsing.h"
 
 #define MAX_HISTORY_ENTRIES 100
 
@@ -149,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
     return entry;
 }
 
-- (void)setPageScrollPosition:(CGFloat)scrollposition onPageInHistoryWithURL:(NSURL *)url {
+- (void)setPageScrollPosition:(double)scrollposition onPageInHistoryWithURL:(NSURL *)url {
     if ([url.wmf_title length] == 0) {
         return;
     }

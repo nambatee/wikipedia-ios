@@ -1,5 +1,6 @@
 #import <YapDatabase/YapDatabase.h>
 #import <YapDataBase/YapDatabaseView.h>
+#import <Foundation/Foundation.h>
 
 @interface YapDatabase (WMFExtensions)
 

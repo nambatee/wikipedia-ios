@@ -2,6 +2,7 @@
 #import "YapDatabase+WMFExtensions.h"
 #import "MWKHistoryEntry+WMFDatabaseStorable.h"
 #import "NSDate+Utilities.h"
+#import "NSURL+WMFLinkParsing.h"
 
 @implementation YapDatabase (WMFViews)
 

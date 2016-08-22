@@ -4,8 +4,8 @@
 #import "MWKSavedPageList.h"
 #import "MWKRecentSearchList.h"
 #import "WMFRelatedSectionBlackList.h"
-#import "Wikipedia-Swift.h"
 #import <YapDataBase/YapDatabase.h>
+#import <PromiseKit/PromiseKit.h>
 
 @interface MWKUserDataStore ()
 

@@ -1,4 +1,7 @@
-#import <CocoaLumberjack/CocoaLumberjack.h>
+@import CocoaLumberjack;
+
+#ifndef WMFLogging_h
+#define WMFLogging_h
 
 // Log level defaults to DEBUG in debug mode, and WARN in release.
 #if DEBUG
@@ -13,3 +16,6 @@ static const DDLogLevel ddLogLevel = DDLogLevelDebug;
 static const DDLogLevel ddLogLevel = DDLogLevelWarning;
 
 #endif
+
+
+#endif /* WMFLogging_h */

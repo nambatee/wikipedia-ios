@@ -1,3 +1,5 @@
+#import <Foundation/Foundation.h>
+
 @interface NSString (WMFExtras)
 
 /// @return A substring of the receiver going up to @c index, or @c length, whichever is shorter.

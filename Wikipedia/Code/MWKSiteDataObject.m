@@ -1,4 +1,5 @@
 #import "MediaWikiKit.h"
+#import "NSURL+WMFLinkParsing.h"
 
 @interface MWKSiteDataObject ()
 

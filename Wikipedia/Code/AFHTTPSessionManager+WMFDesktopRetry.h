@@ -1,4 +1,5 @@
-#import <AFNetworking/AFNetworking.h>
+@import AFNetworking;
+@import PromiseKit;
 
 @interface AFHTTPSessionManager (WMFDesktopRetry)
 

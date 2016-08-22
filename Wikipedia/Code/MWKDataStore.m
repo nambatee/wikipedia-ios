@@ -2,13 +2,17 @@
 
 #import <BlocksKit/BlocksKit.h>
 #import "NSString+WMFExtras.h"
-#import "Wikipedia-Swift.h"
-
 #import "YapDatabase+WMFExtensions.h"
 #import "YapDatabase+WMFViews.h"
 #import "YapDatabaseConnection+WMFExtensions.h"
 #import "YapDatabaseReadWriteTransaction+WMFCustomNotifications.h"
 #import "MWKHistoryEntry+WMFDatabaseStorable.h"
+#import "WMFLogging.h"
+#import "NSURL+WMFLinkParsing.h"
+#import "WMFGCDHelpers.h"
+#import "NSArray+WMFMapping.h"
+#import "WMFDeprecationMacros.h"
+#import <WMFKit/WMFKit-Swift.h>
 
 NSString *const MWKArticleSavedNotification = @"MWKArticleSavedNotification";
 NSString *const MWKArticleKey = @"MWKArticleKey";
