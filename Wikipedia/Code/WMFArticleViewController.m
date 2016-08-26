@@ -126,6 +126,12 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
 @property (strong, nonatomic) UIProgressView* progressView;
 @property (nonatomic, strong) UIRefreshControl* pullToRefresh;
 
+@property (nonatomic, strong) MASConstraint *tableOfContentsWidthConstraint;
+@property (nonatomic, strong) MASConstraint *tableOfContentsLeadingConstraint;
+
+@property (nonatomic, strong) MASConstraint *webViewWidthConstraint;
+@property (nonatomic, strong) MASConstraint *webViewLeadingConstraint;
+
 // Table of Contents
 @property (nonatomic, strong) UISwipeGestureRecognizer *tableOfContentsCloseGestureRecognizer;
 @property (nonatomic, strong) UIView *tableOfContentsSeparatorView;
@@ -859,14 +865,14 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
     
     CGPoint origin = CGPointZero;
     if (self.tableOfContentsDisplayMode != WMFTableOfContentsDisplayModeModal) {
-        self.tableOfContentsViewController.view.frame = CGRectMake(tocOriginX, origin.y, tocWidth, size.height);
+        [self.tableOfContentsWidthConstraint setOffset:tocWidth];
+        [self.tableOfContentsLeadingConstraint setOffset:tocOriginX];
         self.tableOfContentsSeparatorView.frame = CGRectMake(separatorOriginX, origin.y, separatorWidth, size.height);
         self.tableOfContentsViewController.view.alpha = isTOCVisible ? 1 : 0;
-        self.tableOfContentsSeparatorView.alpha = isTOCVisible ? 1 : 0;
     }
     
-    CGRect webFrame = CGRectMake(webFrameOriginX, origin.y, webFrameWidth, size.height);
-    self.webViewController.view.frame = webFrame;
+    [self.webViewWidthConstraint setOffset:webFrameWidth];
+    [self.webViewLeadingConstraint setOffset:webFrameOriginX];
     switch (self.tableOfContentsDisplayState) {
         case WMFTableOfContentsDisplayStateInlineHidden:
             self.webViewController.contentWidthPercentage = 0.71;
@@ -879,7 +885,7 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
             break;
     }
 
-    [self.webViewController.view layoutIfNeeded];
+    [self.view layoutIfNeeded];
     
     [self layoutHeaderImageViewForSize:size];
 }
@@ -940,6 +946,11 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
     [self addChildViewController:self.webViewController];
     [self.view insertSubview:self.webViewController.view atIndex:0];
     [self.webViewController didMoveToParentViewController:self];
+    [self.webViewController.view mas_makeConstraints:^(MASConstraintMaker *make) {
+        self.webViewWidthConstraint = make.width.equalTo(@100);
+        self.webViewLeadingConstraint = make.leading.equalTo(self.view);
+        make.top.and.bottom.equalTo(self.view);
+    }];
 
     self.pullToRefresh         = [[UIRefreshControl alloc] init];
     self.pullToRefresh.enabled = [self canRefresh];
@@ -1054,6 +1065,11 @@ static const CGFloat WMFArticleViewControllerTableOfContentsSectionUpdateScrollD
                     [self.tableOfContentsViewController didMoveToParentViewController:self];
                     
                     [self.view insertSubview:self.tableOfContentsSeparatorView aboveSubview:self.tableOfContentsViewController.view];
+                    [self.tableOfContentsViewController.view mas_makeConstraints:^(MASConstraintMaker *make) {
+                        self.tableOfContentsLeadingConstraint =  make.leading.equalTo(self.view);
+                        self.tableOfContentsWidthConstraint = make.width.equalTo(@50);
+                        make.top.and.bottom.equalTo(self.view);
+                    }];
                     
                     self.tableOfContentsCloseGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleTableOfContentsCloseGesture:)];
                     UISwipeGestureRecognizerDirection closeDirection;
