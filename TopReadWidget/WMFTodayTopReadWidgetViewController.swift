@@ -33,6 +33,7 @@ class WMFTodayTopReadWidgetViewController: UIViewController, NCWidgetProviding {
     @IBOutlet weak var headerLabel: UILabel!
     @IBOutlet weak var footerView: UIView!
     @IBOutlet weak var footerLabel: UILabel!
+    @IBOutlet weak var chevronImageView: UIImageView!
     
     @IBOutlet weak var footerViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var footerViewHeightConstraint: NSLayoutConstraint!
@@ -103,6 +104,9 @@ class WMFTodayTopReadWidgetViewController: UIViewController, NCWidgetProviding {
         
         footerView.alpha = footerVisible ? 1 : 0
         headerView.alpha = headerVisible ? 1 : 0
+        
+        let chevronImage =  UIImage(named: "chevronRightSmall")
+        chevronImageView.image = view.effectiveUserInterfaceLayoutDirection == .RightToLeft ? chevronImage?.imageFlippedForRightToLeftLayoutDirection() : chevronImage
         
         view.layoutIfNeeded()
     }
