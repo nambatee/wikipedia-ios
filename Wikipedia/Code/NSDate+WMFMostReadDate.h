@@ -15,13 +15,6 @@ extern NSInteger const WMFPageviewDataAvailabilityThreshold;
 @interface NSDate (WMFMostReadDate)
 
 /**
- *  @return The most recent fetch date which is likely to have available data.
- *
- *  @see -wmf_bestMostReadFetchDate
- */
-+ (instancetype)wmf_latestMostReadDataWithLikelyAvailableData;
-
-/**
  *  The most recent date, before the receiver, which is likely to have available data for the most read articles.
  *
  *  @note @c NSDate is always in UTC (all times are relative to reference date 2001 Jan 1 0:00:00 UTC)

@@ -16,8 +16,4 @@ NSInteger const WMFPageviewDataAvailabilityThreshold = 12;
     return fetchDate;
 }
 
-+ (instancetype)wmf_latestMostReadDataWithLikelyAvailableData {
-    return [[NSDate date] wmf_bestMostReadFetchDate];
-}
-
 @end

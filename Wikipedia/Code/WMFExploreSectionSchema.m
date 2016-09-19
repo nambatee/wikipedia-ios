@@ -118,9 +118,9 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
  *
  *  @return An array of sections that can be used to start the "feed" from scratch.
  */
-- (NSArray<WMFExploreSection *> *)startingSchema {
-    return @[[WMFExploreSection mainPageSectionWithSiteURL:self.siteURL],
-             [WMFExploreSection randomSectionWithSiteURL:self.siteURL]];
+- (NSArray<WMFExploreSection *> *)startingSchemaForDate:(NSDate *)date {
+    return @[[WMFExploreSection mainPageSectionForDate:date withSiteURL:self.siteURL],
+             [WMFExploreSection randomSectionForDate:date withSiteURL:self.siteURL]];
 }
 
 #pragma mark - Main Article
@@ -189,40 +189,41 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
 
 - (BOOL)update:(BOOL)force {
     [self.locationManager restartLocationMonitoring];
-
+    
+    NSDate *date = [NSDate dateWithTimeIntervalSinceNow:-2*86400];
     if (!NO /*FBTweakValue(@"Explore", @"General", @"Always update on launch", NO)*/
-        && !force && self.lastUpdatedAt && [[NSDate date] timeIntervalSinceDate:self.lastUpdatedAt] < WMFHomeMinimumAutomaticReloadTime) {
-        return [self updateContinueReading];
+        && !force && self.lastUpdatedAt && [date timeIntervalSinceDate:self.lastUpdatedAt] < WMFHomeMinimumAutomaticReloadTime) {
+        return [self updateContinueReadingForDate:date];
     }
 
     //Get updated static sections
-    NSMutableArray<WMFExploreSection *> *sections = [[self staticSections] mutableCopy];
+    NSMutableArray<WMFExploreSection *> *sections = [[self staticSectionsForDate:date] mutableCopy];
 
-    [sections addObjectsFromArray:[self featuredSections]];
+    [sections addObjectsFromArray:[self featuredSectionsForDate:date]];
 
-    [sections addObjectsFromArray:[self randomSections]];
+    [sections addObjectsFromArray:[self randomSectionsForDate:date]];
 
-    [sections addObjectsFromArray:[self mostReadSectionsWithUpdateIfNeeded]];
+    [sections addObjectsFromArray:[self mostReadSectionsForDate:date]];
     [sections addObjectsFromArray:[self nearbySections]];
 
-    [sections addObjectsFromArray:[self pictureOfTheDaySections]];
+    [sections addObjectsFromArray:[self pictureOfTheDaySectionsForDate:date]];
 
     //Add Saved and History
-    NSArray<WMFExploreSection *> *recent = [self historyAndSavedPageSections];
+    NSArray<WMFExploreSection *> *recent = [self historyAndSavedPageSectionsForDate:date];
     if ([recent count] > 0) {
         [sections addObjectsFromArray:recent];
     }
 
-    self.lastUpdatedAt = [NSDate date];
+    self.lastUpdatedAt = date;
 
     [self updateSections:sections];
 
     return YES;
 }
 
-- (BOOL)updateContinueReading {
+- (BOOL)updateContinueReadingForDate:(NSDate *)date {
     WMFExploreSection *old = [self existingContinueReadingSection];
-    WMFExploreSection *new = [self continueReadingSection];
+    WMFExploreSection *new = [self continueReadingSectionForDate:date];
     if (WMF_EQUAL(old.articleURL, isEqual:, new.articleURL)) {
         return NO;
     }
@@ -238,7 +239,7 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
     return YES;
 }
 
-- (void)insertNearbySectionWithLocationIfNeeded:(CLLocation *)location {
+- (void)insertNearbySectionForDate:(NSDate *)date withLocationIfNeeded:(CLLocation *)location {
     NSParameterAssert(location);
 
     NSMutableArray<WMFExploreSection *> *existingNearbySections = [[self nearbySections] mutableCopy];
@@ -269,7 +270,7 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
                                                                   return obj.type == WMFExploreSectionTypeNearby;
                                                               }];
 
-                                                              [existingNearbySections addObject:[self nearbySectionWithLocation:location placemark:placemark]];
+        [existingNearbySections addObject:[self nearbySectionForDate:date withLocation:location placemark:placemark]];
 
                                                               NSUInteger max = [WMFExploreSection maxNumberOfSectionsForType:WMFExploreSectionTypeNearby];
 
@@ -327,16 +328,16 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
  *
  *  @return An array of all existing site-independent sections.
  */
-- (NSArray<WMFExploreSection *> *)staticSections {
+- (NSArray<WMFExploreSection *> *)staticSectionsForDate:(NSDate *)date {
     NSMutableArray<WMFExploreSection *> *sections = [NSMutableArray array];
 
-    [sections addObject:[self mainPageSection]];
-    [sections wmf_safeAddObject:[self continueReadingSection]];
+    [sections addObject:[self mainPageSectionForDate:date]];
+    [sections wmf_safeAddObject:[self continueReadingSectionForDate:date]];
 
     return sections;
 }
 
-- (NSArray<WMFExploreSection *> *)randomSections {
+- (NSArray<WMFExploreSection *> *)randomSectionsForDate:(NSDate *)date {
     NSArray *existingRandomArticleSections = [self.sections bk_select:^BOOL(WMFExploreSection *obj) {
         return obj.type == WMFExploreSectionTypeRandom;
     }];
@@ -350,7 +351,7 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
     }];
 
     if (!containsTodaysRandomArticle) {
-        [randomArray wmf_safeAddObject:[WMFExploreSection randomSectionWithSiteURL:self.siteURL]];
+        [randomArray wmf_safeAddObject:[WMFExploreSection randomSectionForDate:date withSiteURL:self.siteURL]];
     }
 
     NSUInteger max = [WMFExploreSection maxNumberOfSectionsForType:WMFExploreSectionTypeRandom] /*FBTweakValue(@"Explore", @"Sections", @"Max number of random", [WMFExploreSection maxNumberOfSectionsForType:WMFExploreSectionTypeRandom])*/;
@@ -375,12 +376,12 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
     return nearby;
 }
 
-- (nullable WMFExploreSection *)nearbySectionWithLocation:(CLLocation *)location placemark:(nullable CLPlacemark *)placemark {
+- (nullable WMFExploreSection *)nearbySectionForDate:(NSDate *)date withLocation:(CLLocation *)location placemark:(nullable CLPlacemark *)placemark {
     NSParameterAssert(location);
     if (!location || [WMFLocationManager isDeniedOrDisabled]) {
         return nil;
     }
-    return [WMFExploreSection nearbySectionWithLocation:location placemark:placemark siteURL:self.siteURL];
+    return [WMFExploreSection nearbySectionForDate:date withLocation:location placemark:placemark siteURL:self.siteURL];
 }
 
 /**
@@ -391,12 +392,12 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
  *
  *  @return An array of "most read" sections that should be in an updated version of the receiver.
  */
-- (NSArray<WMFExploreSection *> *)mostReadSectionsWithUpdateIfNeeded {
+- (NSArray<WMFExploreSection *> *)mostReadSectionsForDate:(NSDate *)date {
     NSMutableArray<WMFExploreSection *> *mostReadSections = [[self.sections bk_select:^BOOL(WMFExploreSection *section) {
         return section.type == WMFExploreSectionTypeMostRead && section.siteURL != nil && section.mostReadFetchDate != nil;
     }] mutableCopy];
 
-    WMFExploreSection *latestMostReadSection = [self newMostReadSectionWithLatestPopulatedDate];
+    WMFExploreSection *latestMostReadSection = [self newMostReadSectionForDate:date];
 
     BOOL containsLatestSectionEquivalent = [mostReadSections bk_any:^BOOL(WMFExploreSection *mostReadSection) {
         BOOL const matchesDay = [[NSCalendar wmf_utcGregorianCalendar]
@@ -422,8 +423,8 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
     return [mostReadSections wmf_arrayByTrimmingToLength:max];
 }
 
-- (nullable WMFExploreSection *)newMostReadSectionWithLatestPopulatedDate {
-    WMFExploreSection *section = [WMFExploreSection mostReadSectionForDate:[NSDate wmf_latestMostReadDataWithLikelyAvailableData]
+- (nullable WMFExploreSection *)newMostReadSectionForDate:(NSDate *)date {
+    WMFExploreSection *section = [WMFExploreSection mostReadSectionForDate:[date wmf_bestMostReadFetchDate]
                                                                    siteURL:self.siteURL];
 
     if (!section.siteURL || !section.mostReadFetchDate) {
@@ -433,7 +434,7 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
     }
 }
 
-- (NSArray<WMFExploreSection *> *)featuredSections {
+- (NSArray<WMFExploreSection *> *)featuredSectionsForDate:(NSDate *)date {
     NSArray *existingFeaturedArticleSections = [self.sections bk_select:^BOOL(WMFExploreSection *obj) {
         return obj.type == WMFExploreSectionTypeFeaturedArticle;
     }];
@@ -448,7 +449,7 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
     }];
 
     if (!containsTodaysFeaturedArticle) {
-        [featured wmf_safeAddObject:[WMFExploreSection featuredArticleSectionWithSiteURLIfSupported:self.siteURL]];
+        [featured wmf_safeAddObject:[WMFExploreSection featuredArticleSectionForDate:date withSiteURLIfSupported:self.siteURL]];
     }
 
     NSUInteger max = [WMFExploreSection maxNumberOfSectionsForType:WMFExploreSectionTypeFeaturedArticle] /*FBTweakValue(@"Explore", @"Sections", @"Max number of featured", [WMFExploreSection maxNumberOfSectionsForType:WMFExploreSectionTypeFeaturedArticle])*/;
@@ -462,7 +463,7 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
     return [featured wmf_arrayByTrimmingToLength:max];
 }
 
-- (WMFExploreSection *)mainPageSection {
+- (WMFExploreSection *)mainPageSectionForDate:(NSDate *)date {
     WMFExploreSection *main = [self.sections bk_match:^BOOL(WMFExploreSection *obj) {
         if (obj.type == WMFExploreSectionTypeMainPage && [obj.siteURL isEqual:self.siteURL]) {
             return YES;
@@ -475,10 +476,10 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
         return main;
     }
 
-    return [WMFExploreSection mainPageSectionWithSiteURL:self.siteURL];
+    return [WMFExploreSection mainPageSectionForDate:date withSiteURL:self.siteURL];
 }
 
-- (NSArray<WMFExploreSection *> *)pictureOfTheDaySections {
+- (NSArray<WMFExploreSection *> *)pictureOfTheDaySectionsForDate:(NSDate *)date {
     NSMutableArray<WMFExploreSection *> *existingSections = [[self.sections bk_select:^BOOL(WMFExploreSection *obj) {
         if (obj.type == WMFExploreSectionTypePictureOfTheDay) {
             return YES;
@@ -496,7 +497,7 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
     }];
 
     if (todaySection == nil) {
-        [existingSections addObject:[WMFExploreSection pictureOfTheDaySectionWithDate:[NSDate date]]];
+        [existingSections addObject:[WMFExploreSection pictureOfTheDaySectionWithDate:date]];
     }
 
     NSUInteger max = [WMFExploreSection maxNumberOfSectionsForType:WMFExploreSectionTypePictureOfTheDay];
@@ -510,7 +511,7 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
     return [existingSections wmf_arrayByTrimmingToLength:max];
 }
 
-- (nullable WMFExploreSection *)continueReadingSection {
+- (nullable WMFExploreSection *)continueReadingSectionForDate:(NSDate *)date {
     NSDate *resignActiveDate = [[NSUserDefaults wmf_userDefaults] wmf_appResignActiveDate];
     BOOL const shouldShowContinueReading =
         NO /*FBTweakValue(@"Explore", @"Continue Reading", @"Always Show", NO)*/ ||
@@ -520,7 +521,7 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
     if (shouldShowContinueReading) {
         NSURL *lastRead = [[NSUserDefaults wmf_userDefaults] wmf_openArticleURL];
         if (lastRead) {
-            return [WMFExploreSection continueReadingSectionWithArticleURL:lastRead];
+            return [WMFExploreSection continueReadingSectionForDate:date withArticleURL:lastRead];
         }
     }
     return nil;
@@ -550,7 +551,7 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
     }];
 }
 
-- (NSArray<WMFExploreSection *> *)historyAndSavedPageSections {
+     - (NSArray<WMFExploreSection *> *)historyAndSavedPageSectionsForDate:(NSDate *)date {
     NSArray<WMFExploreSection *> *existing = [self existingHistoryAndSavedSections];
 
     NSUInteger max = [WMFExploreSection maxNumberOfSectionsForType:WMFExploreSectionTypeSaved] + [WMFExploreSection maxNumberOfSectionsForType:WMFExploreSectionTypeHistory] /*FBTweakValue(@"Explore", @"Sections", @"Max number of history/saved", [WMFExploreSection maxNumberOfSectionsForType:WMFExploreSectionTypeSaved] + [WMFExploreSection maxNumberOfSectionsForType:WMFExploreSectionTypeHistory])*/;
@@ -625,12 +626,13 @@ static NSTimeInterval const WMFTimeBeforeDisplayingLastReadArticle = 60 * 60 * 2
     if (!location) {
         return;
     }
-    if ([[NSDate date] timeIntervalSinceDate:[location timestamp]] > 60 * 5) {
+    NSDate *date = [NSDate date];
+    if ([date timeIntervalSinceDate:[location timestamp]] > 60 * 5) {
         //We don't want old cached values - fresh data please!
         return;
     }
     [self.locationManager stopMonitoringLocation];
-    [self insertNearbySectionWithLocationIfNeeded:location];
+    [self insertNearbySectionForDate:date withLocationIfNeeded:location];
 }
 
 - (void)nearbyController:(WMFLocationManager *)controller didUpdateHeading:(CLHeading *)heading {

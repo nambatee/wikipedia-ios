@@ -170,6 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
     trending.type = WMFExploreSectionTypeMostRead;
     trending.mostReadFetchDate = date;
     trending.siteURL = [url wmf_siteURL];
+    trending.dateCreated = date;
     return trending;
 }
 
@@ -181,15 +182,16 @@ NS_ASSUME_NONNULL_BEGIN
     return item;
 }
 
-+ (instancetype)continueReadingSectionWithArticleURL:(NSURL *)url {
++ (instancetype)continueReadingSectionForDate:(NSDate *)date withArticleURL:(NSURL *)url {
     NSParameterAssert(url.wmf_title);
     WMFExploreSection *item = [[WMFExploreSection alloc] init];
     item.type = WMFExploreSectionTypeContinueReading;
     item.articleURL = url;
+    item.dateCreated = date;
     return item;
 }
 
-+ (nullable instancetype)featuredArticleSectionWithSiteURLIfSupported:(NSURL *)url {
++ (nullable instancetype)featuredArticleSectionForDate:(NSDate *)date withSiteURLIfSupported:(NSURL *)url {
     NSParameterAssert(url);
     if (![url.wmf_language isEqualToString:@"en"] || ![url.wmf_domain isEqualToString:@"wikipedia.org"]) {
         /*
@@ -199,18 +201,20 @@ NS_ASSUME_NONNULL_BEGIN
     }
     WMFExploreSection *item = [[WMFExploreSection alloc] init];
     item.type = WMFExploreSectionTypeFeaturedArticle;
+    item.dateCreated = date;
     item.siteURL = [url wmf_siteURL];
     return item;
 }
 
-+ (instancetype)mainPageSectionWithSiteURL:(NSURL *)url {
++ (instancetype)mainPageSectionForDate:(NSDate *)date withSiteURL:(NSURL *)url {
     WMFExploreSection *item = [[WMFExploreSection alloc] init];
     item.type = WMFExploreSectionTypeMainPage;
     item.siteURL = [url wmf_siteURL];
+    item.dateCreated = date;
     return item;
 }
 
-+ (instancetype)nearbySectionWithLocation:(CLLocation *)location placemark:(nullable CLPlacemark *)placemark siteURL:(NSURL *)url {
++ (instancetype)nearbySectionForDate:(NSDate *)date withLocation:(CLLocation *)location placemark:(nullable CLPlacemark *)placemark siteURL:(NSURL *)url {
     NSParameterAssert(location);
     NSParameterAssert(url);
     WMFExploreSection *item = [[WMFExploreSection alloc] init];
@@ -218,13 +222,15 @@ NS_ASSUME_NONNULL_BEGIN
     item.location = location;
     item.placemark = placemark;
     item.siteURL = [url wmf_siteURL];
+    item.dateCreated = date;
     return item;
 }
 
-+ (instancetype)randomSectionWithSiteURL:(NSURL *)url {
++ (instancetype)randomSectionForDate:(NSDate *)date withSiteURL:(NSURL *)url {
     WMFExploreSection *item = [[WMFExploreSection alloc] init];
     item.type = WMFExploreSectionTypeRandom;
     item.siteURL = [url wmf_siteURL];
+    item.dateCreated = date;
     return item;
 }
 
