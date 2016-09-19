@@ -470,7 +470,7 @@ static NSString *const MWKImageInfoFilename = @"ImageInfo.plist";
     return existingArticle;
 }
 
-- (MWKArticle *)articleFromDiskWithURL:(NSURL *)url {
+- (nullable MWKArticle *)articleFromDiskWithURL:(NSURL *)url {
     NSString *path = [self pathForArticleURL:url];
     NSString *filePath = [path stringByAppendingPathComponent:@"Article.plist"];
     NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:filePath];

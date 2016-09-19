@@ -45,7 +45,7 @@ extern NSString *const MWKItemUpdatedNotification;
 
 @protocol WMFDatabaseChangeHandler <NSObject>
 
-- (void)processChanges:(NSArray<YapDatabaseViewRowChange *> *)changes onConnection:(YapDatabaseConnection *)connection;
+- (void)processChanges:(NSArray<NSNotification *> *)changes onConnection:(YapDatabaseConnection *)connection;
 
 @end
 
@@ -181,7 +181,7 @@ extern NSString *const MWKItemUpdatedNotification;
  *
  *  @return An article, or @c nil if none was found.
  */
-- (MWKArticle *)articleFromDiskWithURL:(NSURL *)url;
+- (nullable MWKArticle *)articleFromDiskWithURL:(NSURL *)url;
 
 /**
  *  Get or create an article with a given title.

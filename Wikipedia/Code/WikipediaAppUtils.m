@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       [self formFactor]];
 }
 
-static WMFAssetsFile *languageFile = nil;
+static WMFAssetsFile * _Nullable languageFile = nil;
 
 + (void)didReceiveMemoryWarningWithNotification:(NSNotification *)note {
     languageFile = nil;

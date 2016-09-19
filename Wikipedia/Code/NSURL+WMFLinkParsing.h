@@ -188,7 +188,7 @@ extern NSString *const WMFDefaultSiteDomain;
  *
  *  @return The site URL
  */
-@property (nonatomic, copy, readonly) NSURL *wmf_siteURL;
+@property (nonatomic, copy, readonly, nullable) NSURL *wmf_siteURL;
 
 @property (nonatomic, copy, readonly, nullable) NSString *wmf_domain;
 
@@ -196,9 +196,9 @@ extern NSString *const WMFDefaultSiteDomain;
 
 @property (nonatomic, copy, readonly, nullable) NSString *wmf_pathWithoutWikiPrefix;
 
-@property (nonatomic, copy, readonly) NSString *wmf_title;
+@property (nonatomic, copy, readonly, nullable) NSString *wmf_title;
 
-@property (nonatomic, copy, readonly) NSString *wmf_titleWithUnderScores;
+@property (nonatomic, copy, readonly, nullable) NSString *wmf_titleWithUnderScores;
 
 @property (nullable, nonatomic, copy, readonly) NSString *wmf_databaseKey; // string suitable for using as a unique key for the article
 

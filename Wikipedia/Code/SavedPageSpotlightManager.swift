@@ -9,7 +9,11 @@ public extension NSURL {
             return nil
         }
         let searchableItem = CSSearchableItemAttributeSet(itemContentType: kUTTypeInternetLocation as String)
-        searchableItem.keywords = ["Wikipedia","Wikimedia","Wiki"] + wmf_title.componentsSeparatedByString(" ")
+        var keywords = ["Wikipedia","Wikimedia","Wiki"]
+        if let title = wmf_title {
+            keywords = keywords + title.componentsSeparatedByString(" ")
+        }
+        searchableItem.keywords =  keywords
         searchableItem.title = wmf_title
         searchableItem.displayName = wmf_title
         searchableItem.identifier = NSURL.wmf_desktopURLForURL(self).absoluteString

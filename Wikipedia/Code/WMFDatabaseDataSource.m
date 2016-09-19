@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     return results;
 }
 
-- (void)processChanges:(NSArray<YapDatabaseViewRowChange *> *)changes onConnection:(YapDatabaseConnection *)connection {
+- (void)processChanges:(NSArray<NSNotification *> *)changes onConnection:(YapDatabaseConnection *)connection {
     if (![connection isEqual:self.readConnection]) {
         return;
     }
