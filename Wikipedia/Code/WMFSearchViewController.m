@@ -64,6 +64,8 @@ static NSUInteger const kWMFMinResultsBeforeAutoFullTextSearch = 12;
 
 @property (nonatomic, assign, getter=isRecentSearchesHidden) BOOL recentSearchesHidden;
 
+@property (nonatomic, assign) BOOL searchButtonPressed;
+
 - (void)setRecentSearchesHidden:(BOOL)hidingRecentSearches animated:(BOOL)animated;
 
 /**
@@ -295,6 +297,8 @@ static NSUInteger const kWMFMinResultsBeforeAutoFullTextSearch = 12;
 }
 
 - (IBAction)textFieldDidChange {
+    self.searchButtonPressed = NO;
+
     NSString *query = self.searchField.text;
 
     dispatchOnMainQueueAfterDelayInSeconds(0.4, ^{
@@ -340,6 +344,9 @@ static NSUInteger const kWMFMinResultsBeforeAutoFullTextSearch = 12;
     [self saveLastSearch];
     [self updateRecentSearchesVisibility];
     [self.resultsListController wmf_hideEmptyView];
+    if (self.resultsListController.numberOfItems > 0) {
+        self.searchButtonPressed = YES;
+    }
     return YES;
 }
 
@@ -391,8 +398,8 @@ static NSUInteger const kWMFMinResultsBeforeAutoFullTextSearch = 12;
                                                                                                             }
 
                                                                                                             /*
-           HAX: must set dataSource before starting the animation since dataSource is _unsafely_ assigned to the
-           collection view, meaning there's a chance the collectionView accesses deallocated memory during an animation
+         HAX: must set dataSource before starting the animation since dataSource is _unsafely_ assigned to the
+         collection view, meaning there's a chance the collectionView accesses deallocated memory during an animation
          */
                                                                                                             WMFSearchDataSource *dataSource =
                                                                                                                 [[WMFSearchDataSource alloc] initWithSearchSiteURL:url
@@ -402,6 +409,12 @@ static NSUInteger const kWMFMinResultsBeforeAutoFullTextSearch = 12;
 
                                                                                                             [self updateUIWithResults:results];
                                                                                                             [NSUserActivity wmf_makeActivityActive:[NSUserActivity wmf_searchResultsActivitySearchSiteURL:url searchTerm:results.searchTerm]];
+
+                                                                                                            //Only jump to the results if the search button was pressed
+                                                                                                            if (self.searchButtonPressed) {
+                                                                                                                UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                                                                                                                                [[self.resultsListController.tableView visibleCells] firstObject]);
+                                                                                                            }
 
                                                                                                             if ([results.results count] < kWMFMinResultsBeforeAutoFullTextSearch) {
                                                                                                                 return [self.fetcher fetchArticlesForSearchTerm:searchTerm
