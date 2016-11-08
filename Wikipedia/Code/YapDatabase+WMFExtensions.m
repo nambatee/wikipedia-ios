@@ -3,6 +3,21 @@
 
 @implementation YapDatabase (WMFExtensions)
 
++ (BOOL)wmf_migrateToAppContainer:(NSError **)error {
+    NSFileManager *fm = [NSFileManager defaultManager];
+    
+    NSError *copyError = nil;
+    if (![fm copyItemAtPath:[YapDatabase wmf_databasePath] toPath:[YapDatabase wmf_appSpecificDatabasePath] error:&copyError]) {
+        if (copyError.code != NSFileNoSuchFileError) {
+            if (error) {
+                *error = copyError;
+            }
+            return NO;
+        }
+    }
+    return YES;
+}
+
 + (instancetype)sharedInstance {
     static dispatch_once_t onceToken;
     static id sharedInstance;

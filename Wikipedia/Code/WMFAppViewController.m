@@ -294,6 +294,11 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
 
     [window setRootViewController:self];
     [window makeKeyAndVisible];
+    
+    NSError* error;
+    [YapDatabase wmf_migrateToAppContainer:&error];
+    
+    return;
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillEnterForegroundWithNotification:) name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidBecomeActiveWithNotification:) name:UIApplicationDidBecomeActiveNotification object:nil];

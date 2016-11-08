@@ -3,6 +3,8 @@
 
 @interface YapDatabase (WMFExtensions)
 
++ (BOOL)wmf_migrateToAppContainer:(NSError **)error;
+
 /**
  *  Returns the shared DB for the app using the path below.
  *  This also registers all views by calling wmf_registerViews (See YapDatabase+WMFViews.h)
