@@ -294,11 +294,9 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
 
     [window setRootViewController:self];
     [window makeKeyAndVisible];
-    
-    NSError* error;
-    [YapDatabase wmf_migrateToAppContainer:&error];
-    
-    return;
+
+//    NSError *error;
+//    [YapDatabase wmf_migrateToSharedContainer:&error];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillEnterForegroundWithNotification:) name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidBecomeActiveWithNotification:) name:UIApplicationDidBecomeActiveNotification object:nil];
@@ -342,7 +340,7 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
             @strongify(self)
                 self.previewStore = [[WMFArticlePreviewDataStore alloc] initWithDatabase:[YapDatabase sharedInstance]];
             self.contentStore = [[WMFContentGroupDataStore alloc] initWithDatabase:[YapDatabase sharedInstance]];
-
+            
             [self preloadContentSourcesIfNeededWithCompletion:^{
                 [self loadMainUI];
                 [self hideSplashViewAnimated:!didShowOnboarding];

@@ -4,6 +4,7 @@
 @interface YapDatabase (WMFExtensions)
 
 + (BOOL)wmf_migrateToAppContainer:(NSError **)error;
++ (BOOL)wmf_migrateToSharedContainer:(NSError **)error;
 
 /**
  *  Returns the shared DB for the app using the path below.

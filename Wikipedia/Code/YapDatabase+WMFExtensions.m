@@ -7,6 +7,15 @@
     NSFileManager *fm = [NSFileManager defaultManager];
     
     NSError *copyError = nil;
+    if(![fm removeItemAtPath:[YapDatabase wmf_databasePath] error:&copyError]){
+        if (copyError.code != NSFileNoSuchFileError) {
+            if (error) {
+                *error = copyError;
+            }
+            return NO;
+        }
+    }
+    
     if (![fm copyItemAtPath:[YapDatabase wmf_databasePath] toPath:[YapDatabase wmf_appSpecificDatabasePath] error:&copyError]) {
         if (copyError.code != NSFileNoSuchFileError) {
             if (error) {
@@ -16,6 +25,40 @@
         }
     }
     return YES;
+}
+
++ (BOOL)wmf_migrateToSharedContainer:(NSError **)error {
+    NSFileManager *fm = [NSFileManager defaultManager];
+    
+    NSError *copyError = nil;
+    if(![fm removeItemAtPath:[YapDatabase wmf_databasePath] error:&copyError]){
+        if (copyError.code != NSFileNoSuchFileError) {
+            if (error) {
+                *error = copyError;
+            }
+            return NO;
+        }
+    }
+
+//    if(![fm moveItemAtPath:[YapDatabase wmf_databasePath] toPath:[[YapDatabase wmf_databasePath] stringByAppendingString:@".temp"] error:&copyError]){
+//        if (copyError.code != NSFileNoSuchFileError) {
+//            if (error) {
+//                *error = copyError;
+//            }
+//            return NO;
+//        }
+//    }
+    
+    if (![fm copyItemAtPath:[YapDatabase wmf_appSpecificDatabasePath] toPath:[YapDatabase wmf_databasePath] error:&copyError]) {
+        if (copyError.code != NSFileNoSuchFileError) {
+            if (error) {
+                *error = copyError;
+            }
+            return NO;
+        }
+    }
+
+        return YES;
 }
 
 + (instancetype)sharedInstance {
