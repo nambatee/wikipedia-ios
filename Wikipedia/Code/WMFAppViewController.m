@@ -295,8 +295,8 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
     [window setRootViewController:self];
     [window makeKeyAndVisible];
 
-//    NSError *error;
-//    [YapDatabase wmf_migrateToSharedContainer:&error];
+    //        NSError *error;
+    //        [YapDatabase wmf_migrateToSharedContainer:&error];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillEnterForegroundWithNotification:) name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidBecomeActiveWithNotification:) name:UIApplicationDidBecomeActiveNotification object:nil];
@@ -340,7 +340,7 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
             @strongify(self)
                 self.previewStore = [[WMFArticlePreviewDataStore alloc] initWithDatabase:[YapDatabase sharedInstance]];
             self.contentStore = [[WMFContentGroupDataStore alloc] initWithDatabase:[YapDatabase sharedInstance]];
-            
+
             [self preloadContentSourcesIfNeededWithCompletion:^{
                 [self loadMainUI];
                 [self hideSplashViewAnimated:!didShowOnboarding];
@@ -460,11 +460,12 @@ static NSTimeInterval const WMFTimeBeforeRefreshingExploreScreen = 24 * 60 * 60;
 
 - (void)preloadContentSourcesIfNeededWithCompletion:(void (^)(void))completion {
 
-    if ([[NSUserDefaults wmf_userDefaults] wmf_didMigrateToNewFeed]) {
+    if (0) {
         if (completion) {
             completion();
         }
     } else {
+        NSArray *groups = [self.contentStore groups];
         YapDatabaseConnection *conn = [[YapDatabase sharedInstance] wmf_newWriteConnection];
         [conn readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [transaction removeAllObjectsInCollection:[WMFContentGroup databaseCollectionName]];

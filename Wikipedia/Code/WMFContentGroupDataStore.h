@@ -16,6 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)enumerateContentGroupsOfKind:(NSString *)kind withBlock:(void (^)(WMFContentGroup *_Nonnull group, BOOL *stop))block;
 
+- (nullable NSArray<WMFContentGroup *> *)groups;
+
+- (nullable NSArray<WMFContentGroup *> *)groupsOfKind:(NSString *)kind;
+
 - (nullable WMFContentGroup *)firstGroupOfKind:(NSString *)kind;
 
 - (nullable WMFContentGroup *)firstGroupOfKind:(NSString *)kind forDate:(NSDate *)date;

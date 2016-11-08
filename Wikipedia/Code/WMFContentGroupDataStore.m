@@ -45,6 +45,24 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
+- (nullable NSArray<WMFContentGroup *> *)groupsOfKind:(NSString *)kind{
+    NSMutableArray *found = [NSMutableArray array];
+    [self enumerateContentGroupsOfKind:kind
+                             withBlock:^(WMFContentGroup *_Nonnull group, BOOL *_Nonnull stop) {
+                                 [found addObject:group];
+                             }];
+    return found;
+}
+
+- (nullable NSArray<WMFContentGroup *> *)groups{
+    NSMutableArray *found = [NSMutableArray array];
+    [self enumerateContentGroupsWithBlock:^(WMFContentGroup *_Nonnull group, BOOL *_Nonnull stop) {
+                                 [found addObject:group];
+                             }];
+    return found;
+}
+
+
 - (nullable WMFContentGroup *)contentGroupForURL:(NSURL *)url {
     NSParameterAssert(url);
     if(!url){
