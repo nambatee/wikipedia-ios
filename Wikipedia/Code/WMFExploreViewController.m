@@ -505,6 +505,10 @@ static NSString *const WMFFeedEmptyHeaderFooterReuseIdentifier = @"WMFFeedEmptyH
     self.collectionView.scrollsToTop = YES;
     self.collectionView.dataSource = self;
     self.collectionView.delegate = self;
+    if ([self.collectionView respondsToSelector:@selector(setPrefetchDataSource:)]) {
+        self.collectionView.prefetchDataSource = self;
+        self.collectionView.prefetchingEnabled = YES;
+    }
 
     self.reachabilityManager = [AFNetworkReachabilityManager manager];
 
