@@ -532,8 +532,8 @@ static NSTimeInterval WMFFeedRefreshBackgroundTimeout = 30;
     WMFTaskGroup *group = [WMFTaskGroup new];
 
     [group enter];
-    [[self feedContentSource] loadNewContentForce:NO
-                                       completion:^{
+    [[self feedContentSource] loadNewContentIntoManagedObjectContext:self.dataStore.viewContext
+                                                         completion:^{
                                            [group leave];
                                        }];
 
@@ -707,7 +707,7 @@ static NSTimeInterval WMFFeedRefreshBackgroundTimeout = 30;
             UINavigationController *navController = [self navigationControllerForTab:WMFAppTabTypeExplore];
             [navController popToRootViewControllerAnimated:NO];
             NSURL *url = [activity wmf_contentURL];
-            WMFContentGroup *group = [self.contentStore contentGroupForURL:url];
+            WMFContentGroup *group = [self.contentStore contentGroupForURL:url inManagedObjectContext:self.dataStore.viewContext];
             [self.exploreViewController presentMoreViewControllerForGroup:group animated:NO];
 
         } break;
@@ -1012,7 +1012,7 @@ static NSString *const WMFDidShowOnboarding = @"DidShowOnboarding5.3";
     [[self navigationControllerForTab:WMFAppTabTypeExplore] popToRootViewControllerAnimated:NO];
     [[self nearbyContentSource] loadNewContentForce:NO
                                          completion:^{
-                                             WMFContentGroup *nearby = [self.contentStore firstGroupOfKind:WMFContentGroupKindLocation forDate:[NSDate date]];
+                                             WMFContentGroup *nearby = [self.contentStore firstGroupOfKind:WMFContentGroupKindLocation forDate:[NSDate date] inManagedObjectContext:self.dataStore.viewContext];
                                              if (!nearby) {
                                                  //TODO: show an error?
                                                  return;
@@ -1218,7 +1218,7 @@ static NSString *const WMFDidShowOnboarding = @"DidShowOnboarding5.3";
                 return;
             }
             dispatch_async(dispatch_get_main_queue(), ^{
-                WMFContentGroup *newsContentGroup = [self.contentStore firstGroupOfKind:WMFContentGroupKindNews];
+                WMFContentGroup *newsContentGroup = [self.contentStore firstGroupOfKind:WMFContentGroupKindNews inManagedObjectContext:self.dataStore.viewContext];
                 if (newsContentGroup) {
                     NSArray<WMFFeedNewsStory *> *stories = (NSArray<WMFFeedNewsStory *> *)newsContentGroup.content;
                     if (stories.count > 0) {

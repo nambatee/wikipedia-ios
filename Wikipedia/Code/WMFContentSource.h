@@ -5,15 +5,15 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol WMFContentSource <NSObject>
 
 /**
- *  Update now. If force is YES, you should violate any internal business rules and run your update logic immediately.
+ *  Update now.
  *
  */
-- (void)loadNewContentForce:(BOOL)force completion:(nullable dispatch_block_t)completion;
+- (void)loadNewContentIntoManagedObjectContext:(NSManagedObjectContext *)managedObjectContext completion:(nullable dispatch_block_t)completion;
 
 /**
  * Remove all content from the DB
  */
-- (void)removeAllContent;
+- (void)removeAllContentFromManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
 @end
 
@@ -30,14 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol WMFDateBasedContentSource <NSObject>
 
 /**
- * Load old content into the DB if possible
- */
-- (void)preloadContentForNumberOfDays:(NSInteger)days force:(BOOL)force completion:(nullable dispatch_block_t)completion;
-
-/**
  * Load content for a specific date into the DB
  */
-- (void)loadContentForDate:(NSDate *)date force:(BOOL)force completion:(nullable dispatch_block_t)completion;
+- (void)loadContentForDate:(NSDate *)date intoManagedObjectContext:(NSManagedObjectContext *)managedObjectContext completion:(nullable dispatch_block_t)completion;
 
 @end
 

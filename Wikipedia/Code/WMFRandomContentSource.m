@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     [group waitInBackgroundWithCompletion:completion];
 }
 
-- (void)loadContentForDate:(NSDate *)date force:(BOOL)force completion:(nullable dispatch_block_t)completion {
+- (void)loadContentForDate:(NSDate *)date intoManagedObjectContext:(NSManagedObjectContext *)managedObjectContext completion:(nullable dispatch_block_t)completion {
     NSURL *siteURL = self.siteURL;
     
     if (!siteURL) {
@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     NSURL *contentGroupURL = [WMFContentGroup randomContentGroupURLForSiteURL:siteURL date:date];
-    WMFContentGroup *existingGroup = [self.contentStore contentGroupForURL:contentGroupURL];
+    WMFContentGroup *existingGroup = [self.contentStore contentGroupForURL:contentGroupURL inManagedObjectContext:managedObjectContext];
     if (existingGroup) {
         if (completion) {
             completion();
@@ -119,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             
-            [self.contentStore fetchOrCreateGroupForURL:contentGroupURL ofKind:WMFContentGroupKindRandom forDate:date withSiteURL:siteURL associatedContent:@[articleURL] customizationBlock:^(WMFContentGroup * _Nonnull group) {
+            [self.contentStore fetchOrCreateGroupForURL:contentGroupURL ofKind:WMFContentGroupKindRandom forDate:date withSiteURL:siteURL associatedContent:@[articleURL] inManagedObjectContext:managedObjectContext  withCustomizationBlock:^(WMFContentGroup * _Nonnull group) {
                 
             }];
             [self.previewStore addPreviewWithURL:articleURL updatedWithSearchResult:result];
@@ -130,12 +130,8 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)removeAllContent {
-    [self.contentStore removeAllContentGroupsOfKind:WMFContentGroupKindRandom];
-}
-
-- (nullable WMFContentGroup *)randomForDate:(NSDate *)date {
-    return (id)[self.contentStore firstGroupOfKind:WMFContentGroupKindRandom forDate:date];
+- (void)removeAllContentFromManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
+    [self.contentStore removeAllContentGroupsOfKind:WMFContentGroupKindRandom fromManagedObjectContext:managedObjectContext];
 }
 
 @end

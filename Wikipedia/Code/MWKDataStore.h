@@ -59,6 +59,7 @@ extern NSString *const MWKURLKey;
 @property (readonly, strong, nonatomic) MWKRecentSearchList *recentSearchList;
 
 @property (nonatomic, strong, readonly) NSManagedObjectContext *viewContext;
+@property (nonatomic, strong, readonly) NSManagedObjectContext *backgroundContext;
 
 - (nullable WMFArticle *)fetchArticleForURL:(NSURL *)URL;
 - (nullable WMFArticle *)fetchArticleForKey:(NSString *)key;

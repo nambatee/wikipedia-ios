@@ -41,6 +41,7 @@ static NSString *const MWKImageInfoFilename = @"ImageInfo.plist";
 
 @property (nonatomic, strong) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, strong) NSManagedObjectContext *viewContext;
+@property (nonatomic, strong) NSManagedObjectContext *backgroundContext;
 
 @property (nonatomic, strong) NSString *crossProcessNotificationChannelName;
 @property (nonatomic) int crossProcessNotificationToken;
@@ -210,6 +211,9 @@ static uint64_t bundleHash() {
     self.viewContext.persistentStoreCoordinator = persistentStoreCoordinator;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewContextDidSave:) name:NSManagedObjectContextDidSaveNotification object:self.viewContext];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewContextDidChange:) name:NSManagedObjectContextObjectsDidChangeNotification object:self.viewContext];
+    
+    self.backgroundContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    self.backgroundContext.parentContext = self.viewContext;
 }
 
 - (nullable id)archiveableNotificationValueForValue:(id)value {
@@ -268,6 +272,8 @@ static uint64_t bundleHash() {
     const char *name = [self.crossProcessNotificationChannelName UTF8String];
     notify_set_state(_crossProcessNotificationToken, state);
     notify_post(name);
+    
+    [self.backgroundContext mergeChangesFromContextDidSaveNotification:note];
 }
 
 - (void)viewContextDidChange:(NSNotification *)note {

@@ -36,6 +36,8 @@ static NSInteger WMFFeedInTheNewsNotificationViewCountDays = 5;
 
 @property (readwrite, getter=isSchedulingNotifications) BOOL schedulingNotifications;
 
+@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
+
 @end
 
 @implementation WMFFeedContentSource
@@ -198,10 +200,10 @@ static NSInteger WMFFeedInTheNewsNotificationViewCountDays = 5;
 }
 
 - (void)removeAllContent {
-    [self.contentStore removeAllContentGroupsOfKind:WMFContentGroupKindFeaturedArticle];
-    [self.contentStore removeAllContentGroupsOfKind:WMFContentGroupKindPictureOfTheDay];
-    [self.contentStore removeAllContentGroupsOfKind:WMFContentGroupKindTopRead];
-    [self.contentStore removeAllContentGroupsOfKind:WMFContentGroupKindNews];
+    [self.contentStore removeAllContentGroupsOfKind:WMFContentGroupKindFeaturedArticle fromManagedObjectContext:self.managedObjectContext];
+    [self.contentStore removeAllContentGroupsOfKind:WMFContentGroupKindPictureOfTheDay fromManagedObjectContext:self.managedObjectContext];
+    [self.contentStore removeAllContentGroupsOfKind:WMFContentGroupKindTopRead fromManagedObjectContext:self.managedObjectContext];
+    [self.contentStore removeAllContentGroupsOfKind:WMFContentGroupKindNews fromManagedObjectContext:self.managedObjectContext];
 }
 
 #pragma mark - Save Groups
@@ -237,9 +239,9 @@ static NSInteger WMFFeedInTheNewsNotificationViewCountDays = 5;
     [self.previewStore addPreviewWithURL:featuredURL updatedWithFeedPreview:preview pageViews:nil];
 
     if (featured == nil) {
-        [self.contentStore createGroupOfKind:WMFContentGroupKindFeaturedArticle forDate:date withSiteURL:self.siteURL associatedContent:@[featuredURL]];
+        [self.contentStore createGroupOfKind:WMFContentGroupKindFeaturedArticle forDate:date withSiteURL:self.siteURL associatedContent:@[featuredURL] inManagedObjectContext:self.managedObjectContext]];
     } else {
-        [self.contentStore addContentGroup:featured associatedContent:@[featuredURL]];
+        featured.content = @[featuredURL];
     }
 }
 
@@ -279,7 +281,7 @@ static NSInteger WMFFeedInTheNewsNotificationViewCountDays = 5;
     if (group == nil) {
         [self.contentStore createGroupOfKind:WMFContentGroupKindPictureOfTheDay forDate:date withSiteURL:self.siteURL associatedContent:@[image]];
     } else {
-        [self.contentStore addContentGroup:group associatedContent:@[image]];
+        group.content = @[image];
     }
 }
 
@@ -288,11 +290,13 @@ static NSInteger WMFFeedInTheNewsNotificationViewCountDays = 5;
         return;
     }
 
+    
     WMFContentGroup *group = [self newsForDate:date];
 
     if (group == nil) {
-        [self.contentStore createGroupOfKind:WMFContentGroupKindNews forDate:date withSiteURL:self.siteURL associatedContent:news];
+        [self.contentStore createGroupOfKind:WMFContentGroupKindNews forDate:date withSiteURL:self.siteURL associatedContent:news inManagedObjectContext:self.managedObjectContext];
     } else {
+        group.content = news;
         [self.contentStore addContentGroup:group associatedContent:news];
     }
 
@@ -337,20 +341,20 @@ static NSInteger WMFFeedInTheNewsNotificationViewCountDays = 5;
 #pragma mark - Find Groups
 
 - (nullable WMFContentGroup *)featuredForDate:(NSDate *)date {
-    return (id)[self.contentStore firstGroupOfKind:WMFContentGroupKindFeaturedArticle forDate:date siteURL:self.siteURL];
+    return (id)[self.contentStore firstGroupOfKind:WMFContentGroupKindFeaturedArticle forDate:date siteURL:self.siteURL inManagedObjectContext:self.managedObjectContext]];
 }
 
 - (nullable WMFContentGroup *)pictureOfTheDayForDate:(NSDate *)date {
     //NOTE: POTDs are the same across languages so we do not not want to constrain our search by site URL as this will cause duplicates
-    return (id)[self.contentStore firstGroupOfKind:WMFContentGroupKindPictureOfTheDay forDate:date];
+    return (id)[self.contentStore firstGroupOfKind:WMFContentGroupKindPictureOfTheDay forDate:date inManagedObjectContext:self.managedObjectContext]];
 }
 
 - (nullable WMFContentGroup *)topReadForDate:(NSDate *)date {
-    return (id)[self.contentStore firstGroupOfKind:WMFContentGroupKindTopRead forDate:date siteURL:self.siteURL];
+    return (id)[self.contentStore firstGroupOfKind:WMFContentGroupKindTopRead forDate:date siteURL:self.siteURL inManagedObjectContext:self.managedObjectContext]];
 }
 
 - (nullable WMFContentGroup *)newsForDate:(NSDate *)date {
-    return (id)[self.contentStore firstGroupOfKind:WMFContentGroupKindNews forDate:date siteURL:self.siteURL];
+    return (id)[self.contentStore firstGroupOfKind:WMFContentGroupKindNews forDate:date siteURL:self.siteURL inManagedObjectContext:self.managedObjectContext];
 }
 
 #pragma mark - Notifications

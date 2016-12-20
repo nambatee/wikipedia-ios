@@ -34,55 +34,46 @@
     return _fetcher;
 }
 
-- (void)loadNewContentForce:(BOOL)force completion:(nullable dispatch_block_t)completion {
+- (void)loadNewContentIntoManagedObjectContext:(NSManagedObjectContext *)managedObjectContext completion:(dispatch_block_t)completion {
 
     [self.fetcher fetchAnnouncementsForURL:self.siteURL
-        force:force
+        force:NO
         failure:^(NSError *_Nonnull error) {
-            [self updateVisibilityOfAnnouncements];
+            [self updateVisibilityOfAnnouncementsInManagedObjectContext:managedObjectContext];
             if (completion) {
                 completion();
             }
         }
         success:^(NSArray<WMFAnnouncement *> *announcements) {
-            [self saveAnnouncements:announcements
-                         completion:^{
-                             [self updateVisibilityOfAnnouncements];
-                             if (completion) {
-                                 completion();
-                             }
-                         }];
+            [announcements enumerateObjectsUsingBlock:^(WMFAnnouncement *_Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
+                NSURL *URL = [WMFContentGroup announcementURLForSiteURL:self.siteURL identifier:obj.identifier];
+                WMFContentGroup *group = [self.contentStore fetchOrCreateGroupForURL:URL
+                                                                              ofKind:WMFContentGroupKindAnnouncement
+                                                                             forDate:[NSDate date]
+                                                                         withSiteURL:self.siteURL
+                                                                   associatedContent:@[obj]
+                                          inManagedObjectContext:managedObjectContext withCustomizationBlock:^(WMFContentGroup *_Nonnull group){
+                                                                      
+                                                                  }];
+                //Make these visible immediately for previous users
+                if ([[NSUserDefaults wmf_userDefaults] wmf_appResignActiveDate] != nil) {
+                    [group updateVisibility];
+                }
+            }];
+            [self updateVisibilityOfAnnouncementsInManagedObjectContext:managedObjectContext];
+            if (completion) {
+                completion();
+            }
         }];
 }
 
-- (void)removeAllContent {
-    [self.contentStore removeAllContentGroupsOfKind:WMFContentGroupKindAnnouncement];
+- (void)removeAllContentFromManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
+    [self.contentStore removeAllContentGroupsOfKind:WMFContentGroupKindAnnouncement fromManagedObjectContext:managedObjectContext];
 }
 
-- (void)saveAnnouncements:(NSArray<WMFAnnouncement *> *)announcements completion:(nullable dispatch_block_t)completion {
 
-    [announcements enumerateObjectsUsingBlock:^(WMFAnnouncement *_Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
-        NSURL *URL = [WMFContentGroup announcementURLForSiteURL:self.siteURL identifier:obj.identifier];
-        WMFContentGroup *group = [self.contentStore fetchOrCreateGroupForURL:URL
-                                                                      ofKind:WMFContentGroupKindAnnouncement
-                                                                     forDate:[NSDate date]
-                                                                 withSiteURL:self.siteURL
-                                                           associatedContent:@[obj]
-                                                          customizationBlock:^(WMFContentGroup *_Nonnull group){
 
-                                                          }];
-        //Make these visible immediately for previous users
-        if ([[NSUserDefaults wmf_userDefaults] wmf_appResignActiveDate] != nil) {
-            [group updateVisibility];
-        }
-    }];
-
-    if (completion) {
-        completion();
-    }
-}
-
-- (void)updateVisibilityOfAnnouncements {
+- (void)updateVisibilityOfAnnouncementsInManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
     //Only make these visible for previous users of the app
     //Meaning a new install will only see these after they close the app and reopen
     if ([[NSUserDefaults wmf_userDefaults] wmf_appResignActiveDate] == nil) {
@@ -90,6 +81,7 @@
     }
 
     [self.contentStore enumerateContentGroupsOfKind:WMFContentGroupKindAnnouncement
+     inManagedObjectContext:managedObjectContext
                                           withBlock:^(WMFContentGroup *_Nonnull group, BOOL *_Nonnull stop) {
                                               [group updateVisibility];
                                           }];
