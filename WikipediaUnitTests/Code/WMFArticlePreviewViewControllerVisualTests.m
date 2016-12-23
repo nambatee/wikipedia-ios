@@ -1,4 +1,4 @@
-@import WMFUI;
+@import WMFModel;
 
 #import <UIKit/UIKit.h>
 #import "FBSnapshotTestCase+WMFConvenience.h"

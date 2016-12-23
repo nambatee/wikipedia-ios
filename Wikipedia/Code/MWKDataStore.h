@@ -1,3 +1,5 @@
+@import Foundation;
+@import CoreData;
 @class MWKArticle;
 @class MWKSection;
 @class MWKImage;

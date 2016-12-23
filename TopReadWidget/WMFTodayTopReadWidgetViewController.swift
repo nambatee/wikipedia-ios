@@ -1,6 +1,5 @@
 import UIKit
 import NotificationCenter
-import WMFUI
 import WMFModel
 
 class WMFTodayTopReadWidgetViewController: UIViewController, NCWidgetProviding {

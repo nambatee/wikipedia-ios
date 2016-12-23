@@ -1,5 +1,6 @@
 #import <Mantle/Mantle.h>
 #import "MWKDataObject.h"
+#import <WMFModel/WMFBlockDefinitions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

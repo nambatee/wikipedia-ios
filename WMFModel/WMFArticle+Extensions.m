@@ -1,4 +1,5 @@
 #import "WMFArticle+Extensions.h"
+#import "NSDictionary+WMFPageViewsSortedByDate.h"
 
 @implementation WMFArticle (Extensions)
 

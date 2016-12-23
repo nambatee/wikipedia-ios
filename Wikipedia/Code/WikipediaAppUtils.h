@@ -1,4 +1,5 @@
-#import <Foundation/Foundation.h>
+@import Foundation;
+#import "WMFDeprecationMacros.h"
 #import <UIKit/UIKit.h>
 #import "NSString+WMFPageUtilities.h"
 
