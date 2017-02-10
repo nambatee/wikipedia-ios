@@ -1,9 +1,60 @@
 import UIKit
-import MapKit
+import Mapbox
 import WMF
 import TUSafariActivity
 
-class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDelegate, ArticlePopoverViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, PlaceSearchSuggestionControllerDelegate, WMFLocationManagerDelegate, NSFetchedResultsControllerDelegate {
+func MGLCoordinateRegionMakeWithDistance(_ centerCoordinate: CLLocationCoordinate2D, _ latitudinalMeters: CLLocationDistance, _ longitudinalMeters: CLLocationDistance) -> MGLCoordinateRegion {
+    let mkRegion = MKCoordinateRegionMakeWithDistance(centerCoordinate, latitudinalMeters, longitudinalMeters)
+    return MGLCoordinateRegion(center: mkRegion.center, span: MGLCoordinateSpan(latitudeDelta: mkRegion.span.latitudeDelta, longitudeDelta: mkRegion.span.longitudeDelta))
+}
+
+struct MGLCoordinateRegion {
+    var center: CLLocationCoordinate2D
+    var span: MGLCoordinateSpan
+    
+    var coordinateBounds: MGLCoordinateBounds {
+        get {
+            let sw = CLLocationCoordinate2D(latitude: center.latitude - span.latitudeDelta, longitude: center.longitude + span.longitudeDelta)
+            let ne = CLLocationCoordinate2D(latitude: center.latitude + span.latitudeDelta, longitude: center.longitude - span.longitudeDelta)
+            return MGLCoordinateBounds(sw: sw, ne: ne)
+        }
+    }
+    
+    init(center: CLLocationCoordinate2D, span: MGLCoordinateSpan) {
+        self.center = center
+        self.span = span
+    }
+    
+    init(_ bounds: MGLCoordinateBounds) {
+        let centerLat = 0.5*(bounds.ne.latitude + bounds.sw.latitude)
+        let centerLon = 0.5*(bounds.ne.longitude + bounds.sw.longitude)
+        let deltaLat = abs(bounds.ne.latitude - bounds.sw.latitude)
+        let deltaLon = abs(bounds.ne.longitude - bounds.sw.longitude)
+        
+        self.init(center: CLLocationCoordinate2D(latitude: centerLat, longitude:centerLon), span: MGLCoordinateSpan(latitudeDelta: deltaLat, longitudeDelta: deltaLon))
+    }
+    
+    init() {
+        self.init(center: CLLocationCoordinate2D(latitude: 0, longitude:0), span: MGLCoordinateSpan(latitudeDelta: 0, longitudeDelta: 0))
+    }
+}
+
+extension MGLMapView {
+    func regionThatFits(_ region: MGLCoordinateRegion) -> MGLCoordinateRegion {
+        return region
+    }
+    
+    var region: MGLCoordinateRegion {
+        get {
+            return MGLCoordinateRegion(visibleCoordinateBounds)
+        }
+        set {
+            visibleCoordinateBounds = newValue.coordinateBounds
+        }
+    }
+}
+
+class PlacesViewController: UIViewController, MGLMapViewDelegate, UISearchBarDelegate, ArticlePopoverViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, PlaceSearchSuggestionControllerDelegate, WMFLocationManagerDelegate, NSFetchedResultsControllerDelegate {
     
     @IBOutlet weak var redoSearchButton: UIButton!
     let locationSearchFetcher = WMFLocationSearchFetcher()
@@ -18,7 +69,7 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
     let popoverFadeDuration = 0.25
     let popoverDelayDuration = 0.7
     
-    @IBOutlet weak var mapView: MKMapView!
+    var mapView: MGLMapView!
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var listView: UITableView!
     @IBOutlet weak var searchSuggestionView: UITableView!
@@ -137,9 +188,9 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         }
     }
     
-    var _mapRegion: MKCoordinateRegion?
+    var _mapRegion: MGLCoordinateRegion?
     
-    var mapRegion: MKCoordinateRegion? {
+    var mapRegion: MGLCoordinateRegion? {
         set {
             guard let value = newValue else {
                 _mapRegion = nil
@@ -164,19 +215,27 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         }
     }
     
-    var currentSearchRegion: MKCoordinateRegion?
+    var currentSearchRegion: MGLCoordinateRegion?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         redoSearchButton.setTitle("          " + localizedStringForKeyFallingBackOnEnglish("places-search-this-area")  + "          ", for: .normal)
         
+        mapView = MGLMapView(frame: view.bounds)
+
+
+        mapView.delegate = self
+        mapView.allowsRotating = false
+        mapView.allowsTilting = false
+        mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.insertSubview(mapView, at: 0)
         // Setup map view
-        mapView.mapType = .standard
-        mapView.showsBuildings = false
-        mapView.showsTraffic = false
-        mapView.showsPointsOfInterest = false
-        mapView.showsScale = true
+//        mapView.mapType = .standard
+//        mapView.showsBuildings = false
+//        mapView.showsTraffic = false
+//        mapView.showsPointsOfInterest = false
+//        mapView.showsScale = true
         
         // Setup location manager
         locationManager.delegate = self
@@ -191,7 +250,8 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         } else {
             segmentedControl = UISegmentedControl(items: ["M", "L"])
         }
-        
+        mapView.logoView.isHidden = true
+        //mapView.attributionButton.isHidden = true
         segmentedControl.selectedSegmentIndex = 0
         segmentedControl.addTarget(self, action: #selector(segmentedControlChanged), for: .valueChanged)
         segmentedControl.tintColor = UIColor.wmf_blueTint()
@@ -249,7 +309,41 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         searchSuggestionView.contentInset = inset
     }
     
-    func showRedoSearchButtonIfNecessary(forVisibleRegion visibleRegion: MKCoordinateRegion) {
+    func mapView(_ mapView: MGLMapView, didFinishLoading style: MGLStyle) {
+        for layer in style.layers {
+            style.removeLayer(layer)
+        }
+        for source in style.sources {
+            style.removeSource(source)
+        }
+
+        //
+        //
+//        let source = MGLVectorSource(identifier: "pois", tileURLTemplates: ["https://maps.wikimedia.org/osm/{z}/{x}/{y}.png"], options: [
+//            .minimumZoomLevel: 9,
+//            .maximumZoomLevel: 16,
+//            .attributionInfos: [
+//                MGLAttributionInfo(title: NSAttributedString(string: "© OSM"), url: URL(string: "http://openstreetmap.org"))
+//            ]
+//            ])
+        
+        
+        let source = MGLRasterSource(identifier: "wmf", tileURLTemplates: ["https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}@3x.png"], options: [
+            .minimumZoomLevel: 0,
+            .maximumZoomLevel: 18,
+            .tileSize: 256,
+            .attributionInfos: [
+                MGLAttributionInfo(title: NSAttributedString(string: "© WMF"), url: URL(string: "http://wikimedia.org"))
+            ]
+            ])
+        style.addSource(source)
+        
+        let layer = MGLRasterStyleLayer(identifier: "wmf", source: source)
+        layer.rasterOpacity = MGLStyleValue(rawValue: 1)
+        style.addLayer(layer)
+        
+    }
+    func showRedoSearchButtonIfNecessary(forVisibleRegion visibleRegion: MGLCoordinateRegion) {
         guard let searchRegion = currentSearchRegion, let search = currentSearch, search.type != .location, search.type != .saved else {
             redoSearchButton.isHidden = true
             return
@@ -268,7 +362,7 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         redoSearchButton.isHidden = !(ratio > 1.33 || ratio < 0.67 || distance/searchRegionMinDimension > 0.33)
     }
     
-    func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+    func mapView(_ mapView: MGLMapView, regionWillChangeAnimated animated: Bool) {
         deselectAllAnnotations()
     }
     
@@ -281,7 +375,8 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         showPopover(forAnnotationView: selectedAnnotationView)
     }
     
-    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+    
+    func mapView(_ mapView: MGLMapView, regionDidChangeAnimated animated: Bool) {
         _mapRegion = mapView.region
         regroupArticlesIfNecessary(forVisibleRegion: mapView.region)
         articleKeyToSelect = nil
@@ -296,7 +391,9 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
             return
         }
         
-        let annotations = mapView.annotations(in: mapView.visibleMapRect)
+        guard let annotations = mapView.annotations else {
+            return
+        }
         for annotation in annotations {
             guard let place = annotation as? ArticlePlace,
                 place.articles.count == 1,
@@ -316,7 +413,7 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         previouslySelectedArticlePlaceIdentifier = articlePlace.identifier
     }
     
-    func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
+    func mapView(_ mapView: MGLMapView, didUpdate userLocation: MGLUserLocation?) {
         guard !listView.isHidden, let indexPaths = listView.indexPathsForVisibleRows else {
             return
         }
@@ -334,14 +431,14 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         }
     }
     
-    func regionThatFits(articles: [WMFArticle]) -> MKCoordinateRegion {
+    func regionThatFits(articles: [WMFArticle]) -> MGLCoordinateRegion {
         let coordinates: [CLLocationCoordinate2D] =  articles.flatMap({ (article) -> CLLocationCoordinate2D? in
             return article.coordinate
         })
         return coordinates.wmf_boundingRegion
     }
     
-    func adjustLayout(ofPopover articleVC: ArticlePopoverViewController, withSize size: CGSize,  withAnnotationView annotationView: MKAnnotationView) {
+    func adjustLayout(ofPopover articleVC: ArticlePopoverViewController, withSize size: CGSize,  withAnnotationView annotationView: MGLAnnotationView) {
         let annotationCenter = view.convert(annotationView.center, from: mapView)
         let center = CGPoint(x: view.bounds.midX, y:  view.bounds.midY)
         let deltaX = annotationCenter.x - center.x
@@ -371,7 +468,7 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         articleVC.view.frame = CGRect(origin: CGPoint(x: annotationCenter.x + offsetX, y: annotationCenter.y + offsetY), size: articleVC.preferredContentSize)
     }
     
-    func mapView(_ mapView: MKMapView, didSelect annotationView: MKAnnotationView) {
+    func mapView(_ mapView: MGLMapView, didSelect annotationView: MGLAnnotationView) {
         guard let place = annotationView.annotation as? ArticlePlace else {
             return
         }
@@ -389,7 +486,7 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
     
     
     
-    func showPopover(forAnnotationView annotationView: MKAnnotationView) {
+    func showPopover(forAnnotationView annotationView: MGLAnnotationView) {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(showPopoverForSelectedAnnotationView), object: nil)
         guard let place = annotationView.annotation as? ArticlePlace else {
             return
@@ -414,12 +511,16 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         articleVC.subtitleLabel.text = article.wikidataDescription
         
         let articleLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-        let userCoordinate = mapView.userLocation.coordinate
-        let userLocation = CLLocation(latitude: userCoordinate.latitude, longitude: userCoordinate.longitude)
+        if let userCoordinate = mapView.userLocation?.coordinate {
+            let userLocation = CLLocation(latitude: userCoordinate.latitude, longitude: userCoordinate.longitude)
+            
+            let distance = articleLocation.distance(from: userLocation)
+            let distanceString = MKDistanceFormatter().string(fromDistance: distance)
+            articleVC.descriptionLabel.text = distanceString
+        } else {
+            articleVC.descriptionLabel.text = nil
+        }
         
-        let distance = articleLocation.distance(from: userLocation)
-        let distanceString = MKDistanceFormatter().string(fromDistance: distance)
-        articleVC.descriptionLabel.text = distanceString
         
         let size = articleVC.view.systemLayoutSizeFitting(UILayoutFittingCompressedSize)
         articleVC.preferredContentSize =  size
@@ -457,26 +558,24 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         selectedArticlePopover = nil
     }
     
-    func mapView(_ mapView: MKMapView, didDeselect view: MKAnnotationView) {
+    func mapView(_ mapView: MGLMapView, didDeselect view: MGLAnnotationView) {
         selectedArticleKey = nil
         dismissCurrentArticlePopover()
     }
     
-    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        
-    }
     
-    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+    
+    func mapView(_ mapView: MGLMapView, viewFor annotation: MGLAnnotation) -> MGLAnnotationView? {
         
         guard let place = annotation as? ArticlePlace else {
-            // CRASH WORKAROUND 
-            // The UIPopoverController that the map view presents from the default user location annotation is causing a crash. Using our own annotation view for the user location works around this issue.
-            if let userLocation = annotation as? MKUserLocation {
-                let userViewReuseIdentifier = "org.wikimedia.userLocationAnnotationView"
-                let placeView = mapView.dequeueReusableAnnotationView(withIdentifier: userViewReuseIdentifier) as? UserLocationAnnotationView ?? UserLocationAnnotationView(annotation: userLocation, reuseIdentifier: userViewReuseIdentifier)
-                placeView.annotation = userLocation
-                return placeView
-            }
+//            // CRASH WORKAROUND 
+//            // The UIPopoverController that the map view presents from the default user location annotation is causing a crash. Using our own annotation view for the user location works around this issue.
+//            if let userLocation = annotation as? MGLUserLocation {
+//                let userViewReuseIdentifier = "org.wikimedia.userLocationAnnotationView"
+//                let placeView = mapView.dequeueReusableAnnotationView(withIdentifier: userViewReuseIdentifier) as? UserLocationAnnotationView ?? UserLocationAnnotationView(reuseIdentifier: userViewReuseIdentifier)
+//                placeView.annotation = userLocation
+//                return placeView
+//            }
             return nil
         }
         
@@ -484,15 +583,17 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         var placeView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseIdentifier) as! ArticlePlaceView?
         
         if placeView == nil {
-            placeView = ArticlePlaceView(annotation: place, reuseIdentifier: reuseIdentifier)
+            placeView = ArticlePlaceView(reuseIdentifier: reuseIdentifier)
         } else {
             placeView?.prepareForReuse()
-            placeView?.annotation = place
+            //placeView?.annotation = place
         }
         
         if showingAllImages {
             placeView?.set(alwaysShowImage: true, animated: false)
         }
+        
+        placeView?.update(withArticlePlace: place)
         
         if place.articles.count > 1 && place.nextCoordinate == nil {
             placeView?.alpha = 0
@@ -524,7 +625,7 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
     }
     
     
-    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, didChange newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
+    func mapView(_ mapView: MGLMapView, annotationView view: MGLAnnotationView, didChange newState: MGLAnnotationViewDragState, fromOldState oldState: MGLAnnotationViewDragState) {
         
     }
     
@@ -755,7 +856,7 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
     var needsRegroup = false
     var showingAllImages = false
     
-    func regroupArticlesIfNecessary(forVisibleRegion visibleRegion: MKCoordinateRegion) {
+    func regroupArticlesIfNecessary(forVisibleRegion visibleRegion: MGLCoordinateRegion) {
         guard groupingTaskGroup == nil else {
             needsRegroup = true
             return
@@ -789,7 +890,7 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         let shouldShowAllImages = currentPrecision > maxPrecision + 1 || currentPrecision >= currentSearchPrecision + 1
 
         if shouldShowAllImages != showingAllImages {
-            for annotation in mapView.annotations {
+            for annotation in mapView.annotations ?? [] {
                 guard let view = mapView.view(for: annotation) as? ArticlePlaceView else {
                     continue
                 }
@@ -818,7 +919,7 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         
         var annotationsToRemove: [String:ArticlePlace] = [:]
         
-        for annotation in mapView.annotations {
+        for annotation in mapView.annotations ?? [] {
             guard let place = annotation as? ArticlePlace else {
                 continue
             }
@@ -1116,7 +1217,8 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
                     return nil
             }
             set.insert(key)
-            let region = MKCoordinateRegionMakeWithDistance(location.coordinate, dimension, dimension)
+            let region = MGLCoordinateRegionMakeWithDistance(location.coordinate, dimension, dimension)
+            
             return PlaceSearch(type: .location, sortStyle: .links, string: nil, region: region, localizedDescription: result.displayTitle, searchResult: result)
         }
         updateSearchSuggestions(withCompletions: completions)
@@ -1144,7 +1246,7 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
                 return
             }
             
-            let center = self.mapView.userLocation.coordinate
+            let center = self.mapView.userLocation?.coordinate ?? CLLocationCoordinate2D(latitude: 0, longitude: 0)
             let region = CLCircularRegion(center: center, radius: 40075000, identifier: "world")
             self.locationSearchFetcher.fetchArticles(withSiteURL: self.siteURL, in: region, matchingSearchTerm: text, sortStyle: .links, resultLimit: 24, completion: { (locationSearchResults) in
                 guard text == self.searchBar.text else {
@@ -1212,20 +1314,21 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
         cell.descriptionText = article.wikidataDescription
         cell.setImageURL(article.thumbnailURL)
         
-        update(userLocation: mapView.userLocation, onLocationCell: cell, withArticle: article)
+        
+        update(userLocation: locationManager.location, onLocationCell: cell, withArticle: article)
         
         return cell
     }
     
-    func update(userLocation: MKUserLocation, onLocationCell cell: WMFNearbyArticleTableViewCell, withArticle article: WMFArticle) {
-        guard let articleLocation = article.location, let userLocation = userLocation.location else {
+    func update(userLocation: CLLocation, onLocationCell cell: WMFNearbyArticleTableViewCell, withArticle article: WMFArticle) {
+        guard let articleLocation = article.location else {
             return
         }
         
         let distance = articleLocation.distance(from: userLocation)
         cell.setDistance(distance)
         
-        if let heading = mapView.userLocation.heading  {
+        if let heading = mapView.userLocation?.heading  {
             let bearing = userLocation.wmf_bearing(to: articleLocation, forCurrentHeading: heading)
             cell.setBearing(bearing)
         } else {
@@ -1273,7 +1376,7 @@ class PlacesViewController: UIViewController, MKMapViewDelegate, UISearchBarDele
     // WMFLocationManagerDelegate
     
     func locationManager(_ controller: WMFLocationManager, didUpdate location: CLLocation) {
-        let region = MKCoordinateRegionMakeWithDistance(location.coordinate, 5000, 5000)
+        let region = MGLCoordinateRegionMakeWithDistance(location.coordinate, 5000, 5000)
         mapRegion = region
         if currentSearch == nil {
             currentSearch = PlaceSearch(type: .top, sortStyle: .links, string: nil, region: region, localizedDescription: localizedStringForKeyFallingBackOnEnglish("places-search-top-articles"), searchResult: nil)

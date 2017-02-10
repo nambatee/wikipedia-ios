@@ -1,4 +1,4 @@
-extension MKCoordinateRegion {
+extension MGLCoordinateRegion {
     var width: CLLocationDistance {
         get {
             let halfLongitudeDelta = span.longitudeDelta * 0.5

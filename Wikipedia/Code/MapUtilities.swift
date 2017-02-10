@@ -1,7 +1,8 @@
 import MapKit
+import Mapbox
 
 extension Array { // seems you can no longer do extension [CLLocationCoordinate2D] ?
-    var wmf_boundingRegion: MKCoordinateRegion {
+    var wmf_boundingRegion: MGLCoordinateRegion {
         get {
             var rect: MKMapRect?
             
@@ -20,10 +21,11 @@ extension Array { // seems you can no longer do extension [CLLocationCoordinate2
             }
             
             guard let finalRect = rect else {
-                return MKCoordinateRegion()
+                return MGLCoordinateRegion()
             }
             
-            var region = MKCoordinateRegionForMapRect(finalRect)
+            let mkRegion = MKCoordinateRegionForMapRect(finalRect)
+            var region = MGLCoordinateRegion(center: mkRegion.center, span: MGLCoordinateSpan(latitudeDelta: mkRegion.span.latitudeDelta, longitudeDelta: mkRegion.span.longitudeDelta))
             let adjustedLatitudeDelta = 1.3*region.span.latitudeDelta
             let adjustedLongitudeDelta = 1.3*region.span.longitudeDelta
             region.span.latitudeDelta = adjustedLatitudeDelta > 0.1 ? adjustedLatitudeDelta : 0.1 //max( is complaining about an extra param for some reason?

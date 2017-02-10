@@ -45,7 +45,7 @@ class WikidataFetcher: NSObject {
         }).resume()
     }
     
-    func wikidataBoundingRegion(forArticleURL articleURL: URL, failure: @escaping (Error) -> Void, success: @escaping (MKCoordinateRegion) -> Void) {
+    func wikidataBoundingRegion(forArticleURL articleURL: URL, failure: @escaping (Error) -> Void, success: @escaping (MGLCoordinateRegion) -> Void) {
         wikidata(forArticleURL: articleURL, failure: failure) { (jsonObject) in
             guard let entities = jsonObject["entities"] as? [String: Any],
                 let entity = entities.values.first as? [String: Any],

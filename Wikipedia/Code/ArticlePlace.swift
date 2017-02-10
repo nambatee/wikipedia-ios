@@ -1,8 +1,8 @@
 import UIKit
-import MapKit
+import Mapbox
 import WMF
 
-class DebugAnnotation: NSObject, MKAnnotation {
+class DebugAnnotation: NSObject, MGLAnnotation {
     public let coordinate: CLLocationCoordinate2D
     public let title: String?
     public let subtitle: String?
@@ -15,7 +15,7 @@ class DebugAnnotation: NSObject, MKAnnotation {
     }
 }
 
-class ArticlePlace: NSObject, MKAnnotation {
+class ArticlePlace: NSObject, MGLAnnotation {
     public dynamic var coordinate: CLLocationCoordinate2D
     public var nextCoordinate: CLLocationCoordinate2D?
     public let title: String?

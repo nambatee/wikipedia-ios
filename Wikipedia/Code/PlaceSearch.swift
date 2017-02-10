@@ -1,3 +1,5 @@
+import Mapbox
+
 enum PlaceSearchType: UInt {
     case text
     case location
@@ -5,7 +7,7 @@ enum PlaceSearchType: UInt {
     case saved
 }
 
-extension MKCoordinateRegion {
+extension MGLCoordinateRegion {
     var stringValue: String {
         return String(format: "%.3f,%.3f|%.3f,%.3f", center.latitude, center.longitude, span.latitudeDelta, span.longitudeDelta)
     }
@@ -15,12 +17,12 @@ struct PlaceSearch {
     let type: PlaceSearchType
     let sortStyle: WMFLocationSearchSortStyle
     let string: String?
-    var region: MKCoordinateRegion?
+    var region: MGLCoordinateRegion?
     let localizedDescription: String?
     let searchResult: MWKSearchResult?
     var needsWikidataQuery: Bool = true
     
-    init(type: PlaceSearchType, sortStyle: WMFLocationSearchSortStyle, string: String?, region: MKCoordinateRegion?, localizedDescription: String?, searchResult: MWKSearchResult?) {
+    init(type: PlaceSearchType, sortStyle: WMFLocationSearchSortStyle, string: String?, region: MGLCoordinateRegion?, localizedDescription: String?, searchResult: MWKSearchResult?) {
         self.type = type
         self.sortStyle = sortStyle
         self.string = string
@@ -84,8 +86,8 @@ struct PlaceSearch {
             let latd = dictionary["latd"] as? NSNumber,
             let lond = dictionary["lond"] as? NSNumber {
             let coordinate = CLLocationCoordinate2D(latitude: lat.doubleValue, longitude: lon.doubleValue)
-            let span = MKCoordinateSpan(latitudeDelta: latd.doubleValue, longitudeDelta: lond.doubleValue)
-            self.region = MKCoordinateRegion(center: coordinate, span: span)
+            let span = MGLCoordinateSpan(latitudeDelta: latd.doubleValue, longitudeDelta: lond.doubleValue)
+            self.region = MGLCoordinateRegion(center: coordinate, span: span)
         } else {
             self.region = nil
         }

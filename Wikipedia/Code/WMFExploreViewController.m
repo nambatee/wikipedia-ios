@@ -892,7 +892,7 @@ static NSString *const WMFFeedEmptyHeaderFooterReuseIdentifier = @"WMFFeedEmptyH
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
                 menuActionSheet.modalPresentationStyle = UIModalPresentationPopover;
                 menuActionSheet.popoverPresentationController.sourceView = sender;
-                menuActionSheet.popoverPresentationController.sourceRect = [sender bounds];
+                menuActionSheet.popoverPresentationController.sourceRect = [(UIView *)sender bounds];
                 menuActionSheet.popoverPresentationController.permittedArrowDirections = UIPopoverArrowDirectionAny;
                 [self presentViewController:menuActionSheet animated:YES completion:nil];
             } else {

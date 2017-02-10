@@ -1,8 +1,8 @@
 import UIKit
-import MapKit
+import Mapbox
 import WMF
 
-class ArticlePlaceView: MKAnnotationView {
+class ArticlePlaceView: MGLAnnotationView {
     let imageView: UIImageView
     let selectedImageView: UIImageView
     let dotView: UIView
@@ -58,13 +58,22 @@ class ArticlePlaceView: MKAnnotationView {
         }
     }
     
-    override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
+    override init(frame: CGRect) {
         selectedImageView = UIImageView()
         imageView = UIImageView()
         countLabel = UILabel()
         dotView = UIView()
         groupView = UIView()
-        super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
+        super.init(frame: frame)
+    }
+    
+    override init(reuseIdentifier: String?) {
+        selectedImageView = UIImageView()
+        imageView = UIImageView()
+        countLabel = UILabel()
+        dotView = UIView()
+        groupView = UIView()
+        super.init(reuseIdentifier: reuseIdentifier)
         
         frame = CGRect(x: 0, y: 0, width: dimension, height: dimension)
         
@@ -109,40 +118,36 @@ class ArticlePlaceView: MKAnnotationView {
         groupView.addSubview(countLabel)
         
         prepareForReuse()
-        self.annotation = annotation
-        update()
     }
     
-    func update() {
-        if let articlePlace = annotation as? ArticlePlace {
-            if articlePlace.articles.count == 1 {
-                dotView.backgroundColor = UIColor.wmf_green()
-                let article = articlePlace.articles[0]
-                if let thumbnailURL = article.thumbnailURL {
-                    selectedImageView.backgroundColor = UIColor.white
-                    imageView.backgroundColor = UIColor.white
-                    imageView.wmf_setImage(with: thumbnailURL, detectFaces: true, onGPU: true, failure: { (error) in
-                        self.imageView.backgroundColor = UIColor.wmf_green()
+    func update(withArticlePlace articlePlace: ArticlePlace) {
+        if articlePlace.articles.count == 1 {
+            dotView.backgroundColor = UIColor.wmf_green()
+            let article = articlePlace.articles[0]
+            if let thumbnailURL = article.thumbnailURL {
+                selectedImageView.backgroundColor = UIColor.white
+                imageView.backgroundColor = UIColor.white
+                imageView.wmf_setImage(with: thumbnailURL, detectFaces: true, onGPU: true, failure: { (error) in
+                    self.imageView.backgroundColor = UIColor.wmf_green()
+                    self.selectedImageView.backgroundColor = UIColor.wmf_green()
+                    self.selectedImageView.image = nil
+                    self.imageView.image = nil
+                }, success: {
+                    self.selectedImageView.wmf_setImage(with: thumbnailURL, detectFaces: true, onGPU: true, failure: { (error) in
                         self.selectedImageView.backgroundColor = UIColor.wmf_green()
                         self.selectedImageView.image = nil
-                        self.imageView.image = nil
                     }, success: {
-                        self.selectedImageView.wmf_setImage(with: thumbnailURL, detectFaces: true, onGPU: true, failure: { (error) in
-                            self.selectedImageView.backgroundColor = UIColor.wmf_green()
-                            self.selectedImageView.image = nil
-                        }, success: {
-                            
-                        })
+                        
                     })
-                } else {
-                    selectedImageView.image = nil
-                    selectedImageView.backgroundColor = UIColor.wmf_green()
-                    imageView.image = nil
-                    imageView.backgroundColor = UIColor.wmf_green()
-                }
+                })
             } else {
-                countLabel.text = "\(articlePlace.articles.count)"
+                selectedImageView.image = nil
+                selectedImageView.backgroundColor = UIColor.wmf_green()
+                imageView.image = nil
+                imageView.backgroundColor = UIColor.wmf_green()
             }
+        } else {
+            countLabel.text = "\(articlePlace.articles.count)"
         }
         updateDotAndImageHiddenState()
     }
@@ -159,11 +164,11 @@ class ArticlePlaceView: MKAnnotationView {
         }
     }
 
-    override var annotation: MKAnnotation? {
-        didSet {
-            update()
-        }
-    }
+//    override var annotation: MGLAnnotation? {
+//        didSet {
+//            update()
+//        }
+//    }
     
     override func prepareForReuse() {
         super.prepareForReuse()
