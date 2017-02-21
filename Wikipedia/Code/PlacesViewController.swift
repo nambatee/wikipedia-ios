@@ -203,11 +203,7 @@ class PlacesViewController: UIViewController, MGLMapViewDelegate, UISearchBarDel
             regroupArticlesIfNecessary(forVisibleRegion: region)
             showRedoSearchButtonIfNecessary(forVisibleRegion: region)
             
-            UIView.animate(withDuration: animationDuration, animations: {
-                self.mapView.region = region
-            }) { (finished) in
-                
-            }
+            mapView.setVisibleCoordinateBounds(region.coordinateBounds, animated: true)
         }
         
         get {
@@ -328,7 +324,8 @@ class PlacesViewController: UIViewController, MGLMapViewDelegate, UISearchBarDel
 //            ])
         
         
-        let source = MGLRasterSource(identifier: "wmf", tileURLTemplates: ["https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}@3x.png"], options: [
+        let urlTemplate = String(format: "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}@%ix.png", Int(UIScreen.main.scale))
+        let source = MGLRasterSource(identifier: "wmf", tileURLTemplates: [urlTemplate], options: [
             .minimumZoomLevel: 0,
             .maximumZoomLevel: 18,
             .tileSize: 256,
