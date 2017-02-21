@@ -218,7 +218,7 @@ class PlacesViewController: UIViewController, MGLMapViewDelegate, UISearchBarDel
         
         redoSearchButton.setTitle("          " + localizedStringForKeyFallingBackOnEnglish("places-search-this-area")  + "          ", for: .normal)
         
-        let styleURL = URL(string: "mapbox://styles/joewalshwmf/ciz8f1bsn006r2sqzqq4o0wuz")
+        let styleURL = URL(string: "mapbox://styles/joewalshwmf/cizfk5itc00c12so5x3mw48cf") //MGLStyle.lightStyleURL(withVersion: 9)//
         mapView = MGLMapView(frame: view.bounds, styleURL: styleURL)
 
 
