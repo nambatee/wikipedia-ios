@@ -28,8 +28,8 @@ extension Array { // seems you can no longer do extension [CLLocationCoordinate2
             var region = MGLCoordinateRegion(center: mkRegion.center, span: MGLCoordinateSpan(latitudeDelta: mkRegion.span.latitudeDelta, longitudeDelta: mkRegion.span.longitudeDelta))
             let adjustedLatitudeDelta = 1.3*region.span.latitudeDelta
             let adjustedLongitudeDelta = 1.3*region.span.longitudeDelta
-            region.span.latitudeDelta = adjustedLatitudeDelta > 0.1 ? adjustedLatitudeDelta : 0.1 //max( is complaining about an extra param for some reason?
-            region.span.longitudeDelta = adjustedLongitudeDelta > 0.1 ? adjustedLongitudeDelta : 0.1
+            region.span.latitudeDelta = adjustedLatitudeDelta > 0.01 ? adjustedLatitudeDelta : 0.01 //max( is complaining about an extra param for some reason?
+            region.span.longitudeDelta = adjustedLongitudeDelta > 0.01 ? adjustedLongitudeDelta : 0.01
             return region
         }
     }
