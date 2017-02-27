@@ -107,12 +107,6 @@ static const char *const WMFImageControllerAssociationKey = "WMFImageController"
         return;
     }
 
-    UIImage *cachedImage = [self wmf_cachedImage];
-    if (cachedImage) {
-        [self wmf_setImage:cachedImage detectFaces:detectFaces onGPU:onGPU animated:NO failure:failure success:success];
-        return;
-    }
-
     @weakify(self);
     self.wmf_imageURLToCancel = imageURL;
     [self.wmf_imageController fetchImageWithURL:imageURL
@@ -125,13 +119,14 @@ static const char *const WMFImageControllerAssociationKey = "WMFImageController"
                                                     failure([NSError wmf_cancelledError]);
                                                 } else {
                                                     self.wmf_imageURLToCancel = nil;
-                                                    [self wmf_setImage:download.image detectFaces:detectFaces onGPU:onGPU animated:YES failure:failure success:success];
+                                                    [self wmf_setImage:download.image withData:download.data detectFaces:detectFaces onGPU:onGPU animated:YES failure:failure success:success];
                                                 }
                                             });
                                         }];
 }
 
 - (void)wmf_setImage:(UIImage *)image
+            withData:(nullable NSData *)data
          detectFaces:(BOOL)detectFaces
                onGPU:(BOOL)onGPU
             animated:(BOOL)animated
@@ -139,13 +134,13 @@ static const char *const WMFImageControllerAssociationKey = "WMFImageController"
              success:(WMFSuccessHandler)success {
     NSAssert([NSThread isMainThread], @"Interaction with a UIImageView should only happen on the main thread");
     if (!detectFaces) {
-        [self wmf_setImage:image detectFaces:detectFaces faceBoundsValue:nil animated:animated failure:failure success:success];
+        [self wmf_setImage:image withData:data detectFaces:detectFaces faceBoundsValue:nil animated:animated failure:failure success:success];
         return;
     }
 
     if (![self wmf_imageRequiresFaceDetection]) {
         NSValue *faceBoundsValue = [self wmf_faceBoundsInImage:image];
-        [self wmf_setImage:image detectFaces:detectFaces faceBoundsValue:faceBoundsValue animated:animated failure:failure success:success];
+        [self wmf_setImage:image withData:data detectFaces:detectFaces faceBoundsValue:faceBoundsValue animated:animated failure:failure success:success];
         return;
     }
 
@@ -158,20 +153,21 @@ static const char *const WMFImageControllerAssociationKey = "WMFImageController"
                                    if (!WMF_EQUAL([self wmf_imageURLToFetch], isEqual:, imageURL)) {
                                        failure([NSError wmf_cancelledError]);
                                    } else {
-                                       [self wmf_setImage:image detectFaces:detectFaces faceBoundsValue:bounds animated:animated failure:failure success:success];
+                                       [self wmf_setImage:image withData:data detectFaces:detectFaces faceBoundsValue:bounds animated:animated failure:failure success:success];
                                    }
                                });
                            }];
 }
 
 - (void)wmf_setImage:(UIImage *)image
+            withData:(nullable NSData *)data
          detectFaces:(BOOL)detectFaces
      faceBoundsValue:(nullable NSValue *)faceBoundsValue
             animated:(BOOL)animated
              failure:(WMFErrorHandler)failure
              success:(WMFSuccessHandler)success {
     NSAssert([NSThread isMainThread], @"Interaction with a UIImageView should only happen on the main thread");
-    
+
     CGRect faceBounds = [faceBoundsValue CGRectValue];
     if (detectFaces) {
         CGFloat faceArea = faceBounds.size.width * faceBounds.size.height;
@@ -184,24 +180,27 @@ static const char *const WMFImageControllerAssociationKey = "WMFImageController"
     } else {
         [self wmf_resetContentsRect];
     }
-    
+
     dispatch_block_t animations = ^{
         [self wmf_hidePlaceholder];
     };
-    
+
     self.image = image;
-    
-    if (image.isGIF && [self isKindOfClass:[FLAnimatedImageView class]]) {
-        NSURL *imageURL = [self wmf_imageURLToFetch];
-        FLAnimatedImage *animatedImage = [FLAnimatedImage animatedImageWithGIFData: [[self wmf_imageController] diskDataForImageWithURL:imageURL]];
-        FLAnimatedImageView *animatedImageView = ((FLAnimatedImageView*) self);
-        animatedImageView.animatedImage = animatedImage;
+
+    if (image.isGIF && [self isKindOfClass:[FLAnimatedImageView class]] && data) {
+        FLAnimatedImage *animatedImage = [FLAnimatedImage animatedImageWithGIFData:data];
+        if (animatedImage) {
+            FLAnimatedImageView *animatedImageView = ((FLAnimatedImageView *)self);
+            animatedImageView.animatedImage = animatedImage;
+        }
     }
-    
+
     if (animated) {
-        [UIView animateWithDuration:[CATransaction animationDuration] animations:animations completion:^(BOOL finished) {
-            success();
-        }];
+        [UIView animateWithDuration:[CATransaction animationDuration]
+                         animations:animations
+                         completion:^(BOOL finished) {
+                             success();
+                         }];
     } else {
         animations();
         success();

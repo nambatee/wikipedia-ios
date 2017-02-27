@@ -146,7 +146,7 @@ open class WMFImageController : NSObject {
                 failure(opError)
             } else if let imageURL = imageURL, let image = image {
                 let origin = ImageOrigin(sdOrigin: type)
-                success(WMFImageDownload(url: imageURL, image: image, origin: origin))
+                success(WMFImageDownload(url: imageURL, image: image, data: data, origin: origin))
             } else {
                 //should never reach this point
                  failure(WMFImageControllerError.dataNotFound)
@@ -263,7 +263,7 @@ open class WMFImageController : NSObject {
                 failure(WMFImageControllerError.dataNotFound)
                 return
             }
-            success(WMFImageDownload(url: url, image: image, origin: ImageOrigin(sdOrigin: origin) ))
+            success(WMFImageDownload(url: url, image: image, data: data, origin: ImageOrigin(sdOrigin: origin) ))
         }
         addCancellableForURL(op as! Cancellable, url: url)
     }
