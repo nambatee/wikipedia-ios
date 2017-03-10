@@ -70,12 +70,14 @@
 "account-creation-missing-fields" = "Error shown when one of the required fields for account creation (username, password, and password confirmation) is empty.";
 "account-creation-create-account" = "Text for create account button";
 "account-creation-have-account" = "Text for button which shows login interface. $1 is the message {{msg-wikimedia|account-creation-log-in}}";
-"account-creation-log-in" = "Log in text to be used as part of a log in button";
+"account-creation-log-in" = "Log in text to be used as part of a log in button\n{{Identical|Log in}}";
 "new-password-title" = "Title for password change interface";
 "new-password-instructions" = "Instructions for password change interface";
 "two-factor-login-title" = "Title for two factor login interface";
 "two-factor-login-instructions" = "Instructions for two factor login interface";
 "two-factor-login-continue" = "Button text for finishing two factor login";
+"two-factor-login-with-regular-code" = "Button text for showing text fields for normal two factor login";
+"two-factor-login-with-backup-code" = "Button text for showing text field for backup code two factor login";
 "login-name-not-found" = "Alert text shown when no user name was entered";
 "login-name-illegal" = "Alert text shown the chosen user name is now allowed by the wiki (e.g. for containing an \"@\" or for being too similar to an existing one).";
 "login-name-does-not-exist" = "Alert text shown when user name entered was not found";
@@ -90,9 +92,9 @@
 "login-title" = "Title for log in interface";
 "login-no-account" = "Text for create account button. $1 is the message {{msg-wikimedia|login-account-join-wikipedia}}";
 "login-join-wikipedia" = "Join Wikipedia text to be used as part of a create account button";
-"field-username-title" = "Title for username field";
+"field-username-title" = "Title for username field\n{{Identical|Username}}";
 "field-username-placeholder" = "Placeholder text shown inside username field until user taps on it";
-"field-password-title" = "Title for password field";
+"field-password-title" = "Title for password field\n{{Identical|Password}}";
 "field-password-placeholder" = "Placeholder text shown inside password field until user taps on it";
 "field-password-confirm-title" = "Title for confirm password field";
 "field-password-confirm-placeholder" = "Placeholder text shown inside confirm password field until user taps on it";
@@ -102,7 +104,9 @@
 "field-new-password-confirm-placeholder" = "Placeholder text shown inside confirm new password field until user taps on it";
 "field-email-title" = "Title for email address field";
 "field-email-placeholder" = "Placeholder text shown inside email address field until user taps on it";
-"field-token-title" = "Title for token field";
+"field-token-title" = "Title for token field\n{{Identical|Token}}";
+"field-backup-token-title" = "Title for backup token field";
+"field-token-invalid" = "Alert shown if token is not correct";
 "field-token-placeholder" = "Placeholder text shown inside token field until user taps on it";
 "field-captcha-title" = "Title for captcha field";
 "field-captcha-placeholder" = "Placeholder text shown inside captcha field until user taps on it";
@@ -280,6 +284,8 @@
 "share-as-image" = "Button label for sharing as an image card";
 "share-as-text" = "Button label for sharing as a text snippet (instead of as an image card)";
 "share-cancel" = "Button which dismisses the share dialog, cancelling the action.\n{{Identical|Cancel}}";
+"share-open-in-maps" = "Button to open current article's location in the Maps app.";
+"share-get-directions-in-maps" = "Button to get directions to the current article's location in the Maps app.";
 "timestamp-just-now" = "Human-readable approximate timestamp for events in the last couple of minutes.\n{{Identical|Just now}}";
 "timestamp-minutes" = "Human-readable approximate timestamp for events in the last couple hours, expressed as minutes";
 "timestamp-hours" = "Human-readable approximate timestamp for events in the last couple days, expressed as hours";

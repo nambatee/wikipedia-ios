@@ -1,5 +1,7 @@
 #import "WMFCVLMetrics.h"
+#if WMF_TWEAKS_ENABLED
 #import <Tweaks/FBTweakInline.h>
+#endif
 
 @interface WMFCVLMetrics ()
 @property (nonatomic) CGSize boundsSize;
@@ -30,16 +32,16 @@
     WMFCVLMetrics *metrics = [[WMFCVLMetrics alloc] init];
     metrics.boundsSize = boundsSize;
     BOOL isRTL = [[UIApplication sharedApplication] userInterfaceLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft;
-    BOOL isPad = boundsSize.width >= 600;
+    BOOL isLandscape = boundsSize.width > boundsSize.height;
     BOOL isWide = boundsSize.width >= 1000;
-    metrics.numberOfColumns = isPad ? 2 : 1;
-    metrics.columnWeights = isPad ? isRTL ? @[@0.821, @1.179] : @[@1.179, @0.821] : @[@1];
-    metrics.interColumnSpacing = isPad ? 20 : 0;
+    metrics.numberOfColumns = isLandscape ? 2 : 1;
+    metrics.columnWeights = isLandscape ? isRTL ? @[@0.821, @1.179] : @[@1.179, @0.821] : @[@1];
+    metrics.interColumnSpacing = isLandscape ? 20 : 0;
     metrics.interItemSpacing = 1;
-    metrics.interSectionSpacing = isPad ? 20 : 50;
-    metrics.contentInsets = isPad ? isWide ? UIEdgeInsetsMake(20, 90, 20, 90) : UIEdgeInsetsMake(20, 22, 20, 22) : UIEdgeInsetsMake(0, 0, 50, 0);
+    metrics.interSectionSpacing = isLandscape ? 20 : 50;
+    metrics.contentInsets = isLandscape ? isWide ? UIEdgeInsetsMake(20, 90, 20, 90) : UIEdgeInsetsMake(20, 22, 20, 22) : UIEdgeInsetsMake(0, 0, 50, 0);
     metrics.sectionInsets = UIEdgeInsetsMake(1, 0, 1, 0);
-    metrics.shouldMatchColumnHeights = FBTweakValue(@"Explore", @"General", @"Match Column Heights", YES);
+    metrics.shouldMatchColumnHeights = YES;
     return metrics;
 }
 

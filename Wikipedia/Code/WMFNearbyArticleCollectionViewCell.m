@@ -1,5 +1,7 @@
 #import "WMFNearbyArticleCollectionViewCell.h"
+#if WMF_TWEAKS_ENABLED
 #import <Tweaks/FBTweakInline.h>
+#endif
 
 #import "UIImageView+WMFFaceDetectionBasedOnUIApplicationSharedApplication.h"
 
@@ -100,6 +102,12 @@
         [attributedTitleAndDescription appendAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n"]];
         [attributedTitleAndDescription appendAttributedString:searchResultDescription];
     }
+   
+    NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+    style.lineBreakMode = NSLineBreakByTruncatingTail;
+    [attributedTitleAndDescription addAttribute:NSParagraphStyleAttributeName
+                                          value:style
+                                          range:NSMakeRange(0, attributedTitleAndDescription.length)];
 
     self.titleLabel.attributedText = attributedTitleAndDescription;
 }
@@ -140,13 +148,13 @@
 }
 
 - (void)setDistance:(CLLocationDistance)distance {
-#if FB_TWEAK_ENABLED
+#if WMF_TWEAKS_ENABLED
     if (FBTweakValue(@"Explore", @"Nearby", @"Show raw distance", NO)) {
         self.distanceLabel.text = [NSString stringWithFormat:@"%f", distance];
     } else {
 #endif
         self.distanceLabel.text = [NSString wmf_localizedStringForDistance:distance];
-#if FB_TWEAK_ENABLED
+#if WMF_TWEAKS_ENABLED
     }
 #endif
 }
